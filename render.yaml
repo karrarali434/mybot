@@ -1,0 +1,20 @@
+services:
+  - type: worker
+    name: telegram-bot
+    runtime: python
+    plan: starter
+    buildCommand: |
+      pip install -r requirements.txt
+      apt-get update && apt-get install -y ffmpeg
+    startCommand: python main.py
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: SUDO_ID
+        sync: false
+      - key: BOT_USERNAME
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.11.6"

@@ -1,0 +1,39 @@
+# ===== Environment & Secrets =====
+.env
+
+# ===== Python =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ===== Telegram Sessions =====
+*.session
+*.session-journal
+
+# ===== Databases =====
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# ===== Downloads =====
+downloads/
+
+# ===== OS Junk =====
+__MACOSX/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===== Logs =====
+*.log
+unknown_errors.txt
+
+# ===== Test Files =====
+test_out.json
