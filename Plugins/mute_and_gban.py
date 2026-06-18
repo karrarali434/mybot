@@ -1,4 +1,4 @@
-'''
+﻿'''
 
 
 ██████╗░██████╗░██████╗░
@@ -10,10 +10,11 @@
 
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 
 '''
 import random, re, time
+import json as _json
 from threading import Thread
 from pyrogram import *
 from pyrogram.enums import *
@@ -58,15 +59,19 @@ def mute_func(c,m,k):
            return m.reply(f'{k} هذا الامر يخص ( المدير وفوق ) بس')
         if id == m.from_user.id:
            return m.reply('شفيك تبي تنزل نفسك')
-        if pre_pls(id, m.chat.id):
+        if admin_pls(id, m.chat.id):
            rank = get_rank(id,m.chat.id)
-           return m.reply(f'{k} هييه مايمديك تكتم {rank} يورع!')
+           return m.reply(f'「 {mention} 」\n{k} عذراً، لا يمكنك كتم شخص يمتلك رتبة ( {rank} )\n☆')
         if r.get(f'{id}:mute:{m.chat.id}{Dev_Zaid}'):
           return m.reply(f'「 {mention} 」\n{k} مكتوم من قبل\n☆')
         else:
           r.set(f'{id}:mute:{m.chat.id}{Dev_Zaid}', 1)
           r.sadd(f'{m.chat.id}:listMUTE:{Dev_Zaid}', id)
-          return m.reply(f'「 {mention} 」\n{k} كتمته\n☆')
+          r.set(f'{m.chat.id}:print:mute:{id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+          bot_msg = m.reply(f'「 {mention} 」\n{k} كتمته\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):')
+          data = {"action": "كتم", "target_id": id, "mention": mention}
+          r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+          return bot_msg
    
    if re.match("^كتم عام (.*?)$", text) and len(text.split()) ==  3:
       if not '@' in text and not re.findall('[0-9]+', text):
@@ -86,13 +91,17 @@ def mute_func(c,m,k):
          return m.reply(f'{k} مافيه يوزر كذا')
       if dev_pls(id, m.chat.id):
          rank = get_rank(id,m.chat.id)
-         return m.reply(f'{k} هييه مايمديك تكتم {rank} يورع!')
+         return m.reply(f'「 {mention} 」\n{k} عذراً، لا يمكنك كتم شخص يمتلك رتبة ( {rank} ) عام\n☆')
       if r.get(f'{id}:mute:{Dev_Zaid}'):
           return m.reply(f'「 {mention} 」\n{k} مكتوم عام من قبل\n☆')
       else:
           r.set(f'{id}:mute:{Dev_Zaid}', 1)
           r.sadd(f'listMUTE:{Dev_Zaid}', id)
-          return m.reply(f'「 {mention} 」\n{k} كتمته عام\n☆')
+          r.set(f'print:gmute:{id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+          bot_msg = m.reply(f'「 {mention} 」\n{k} كتمته عام\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):')
+          data = {"action": "كتم عام", "target_id": id, "mention": mention}
+          r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+          return bot_msg
 
    if re.match("^كتم (.*?)$", text) and len(text.split()) == 2:
       if not '@' in text and not re.findall('[0-9]+', text):
@@ -114,12 +123,16 @@ def mute_func(c,m,k):
         return m.reply('شفيك تبي تنزل نفسك')
       if r.get(f'{id}:mute:{m.chat.id}{Dev_Zaid}'):
          return m.reply(f'「 {mention} 」\n{k} مكتوم من قبل\n☆')
-      if pre_pls(id, m.chat.id):
+      if admin_pls(id, m.chat.id):
          rank = get_rank(id,m.chat.id)
-         return m.reply(f'{k} هييه مايمديك تكتم {rank} يورع!')
+         return m.reply(f'「 {mention} 」\n{k} عذراً، لا يمكنك كتم شخص يمتلك رتبة ( {rank} )\n☆')
       r.set(f'{id}:mute:{m.chat.id}{Dev_Zaid}', 1)
       r.sadd(f'{m.chat.id}:listMUTE:{Dev_Zaid}', id)
-      return m.reply(f'「 {mention} 」\n{k} كتمته\n☆')
+      r.set(f'{m.chat.id}:print:mute:{id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+      bot_msg = m.reply(f'「 {mention} 」\n{k} كتمته\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):')
+      data = {"action": "كتم", "target_id": id, "mention": mention}
+      r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+      return bot_msg
    
    if text == 'الغاء الكتم' and m.reply_to_message and m.reply_to_message.from_user:
         id = m.reply_to_message.from_user.id
@@ -131,6 +144,7 @@ def mute_func(c,m,k):
         else:
           r.delete(f'{id}:mute:{m.chat.id}{Dev_Zaid}')
           r.srem(f'{m.chat.id}:listMUTE:{Dev_Zaid}', id)
+          r.delete(f'{m.chat.id}:print:mute:{id}{Dev_Zaid}')
           return m.reply(f'「 {mention} 」\n{k} ابشر الغيت كتمه\n༄')
    
    if re.match("^الغاء الكتم العام (.*?)$", text) and len(text.split()) ==  4:
@@ -156,6 +170,7 @@ def mute_func(c,m,k):
       else:
           r.delete(f'{id}:mute:{Dev_Zaid}')
           r.srem(f'listMUTE:{Dev_Zaid}',id)
+          r.delete(f'print:gmute:{id}{Dev_Zaid}')
           return m.reply(f'「 {mention} 」\n{k} لغيت كتمته عام\n☆')
 
    if re.match("^الغاء الكتم (.*?)$", text) and len(text.split()) ==  3:
@@ -180,6 +195,7 @@ def mute_func(c,m,k):
          return m.reply(f'「 {mention} 」\n{k} مو مكتوم من قبل\n☆')
       r.delete(f'{id}:mute:{m.chat.id}{Dev_Zaid}')
       r.srem(f'{m.chat.id}:listMUTE:{Dev_Zaid}', id)
+      r.delete(f'{m.chat.id}:print:mute:{id}{Dev_Zaid}')
       return m.reply(f'「 {mention} 」\n{k} أبشر الغيت كتمه\n☆')
    
    if re.match("^حظر عام (.*?)$", text) and len(text.split()) ==  3:
@@ -200,13 +216,16 @@ def mute_func(c,m,k):
          return m.reply(f'{k} مافيه يوزر كذا')
       if dev_pls(id, m.chat.id):
          rank = get_rank(id,m.chat.id)
-         return m.reply(f'{k} هييه مايمديك تحظر {rank} يورع!')
+         return m.reply(f'「 {mention} 」\n{k} عذراً، لا يمكنك حظر شخص يمتلك رتبة ( {rank} )\n☆')
       if r.get(f'{id}:gban:{Dev_Zaid}'):
           return m.reply(f'{k} الحمار「 {mention} 」\n{k} محظور عام من قبل\n☆')
-      else:
           r.set(f'{id}:gban:{Dev_Zaid}', 1)
           r.sadd(f'listGBAN:{Dev_Zaid}', id)
-          return m.reply(f'{k} الحمار「 {mention} 」\n{k} حظرته عام\n☆')
+          r.set(f'print:gban:{id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+          bot_msg = m.reply(f'{k} الحمار「 {mention} 」\n{k} حظرته عام\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):')
+          data = {"action": "حظر عام", "target_id": id, "mention": mention}
+          r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+          return bot_msg
    
    if re.match("^حظر عام من الالعاب (.*?)$", text) and len(text.split()) ==  5:
       if not '@' in text and not re.findall('[0-9]+', text):
@@ -226,7 +245,7 @@ def mute_func(c,m,k):
          return m.reply(f'{k} مافيه يوزر كذا')
       if dev_pls(id, m.chat.id):
          rank = get_rank(id,m.chat.id)
-         return m.reply(f'{k} هييه مايمديك تحظر {rank} يورع!')
+         return m.reply(f'「 {mention} 」\n{k} عذراً، لا يمكنك حظر شخص يمتلك رتبة ( {rank} ) من الألعاب\n☆')
       if r.get(f'{id}:gbangames:{Dev_Zaid}'):
           return m.reply(f'{k} الحمار「 {mention} 」\n{k} محظور من الالعاب من قبل\n☆')
       else:
@@ -234,7 +253,11 @@ def mute_func(c,m,k):
           r.sadd(f'listGBANGAMES:{Dev_Zaid}', id)
           r.delete(f'{id}:Floos')
           r.srem("BankList",id)
-          return m.reply(f'{k} الحمار「 {mention} 」\n{k} حظرته عام من الالعاب\n☆')
+          r.set(f'print:gbangames:{id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+          bot_msg = m.reply(f'{k} الحمار「 {mention} 」\n{k} حظرته عام من الالعاب\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):')
+          data = {"action": "حظر عام من الالعاب", "target_id": id, "mention": mention}
+          r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+          return bot_msg
    
    if re.match("^الغاء الحظر العام من الالعاب (.*?)$", text) and len(text.split()) ==  6:
       if not '@' in text and not re.findall('[0-9]+', text):
@@ -259,6 +282,7 @@ def mute_func(c,m,k):
       else:
           r.delete(f'{id}:gbangames:{Dev_Zaid}')
           r.srem(f'listGBANGAMES:{Dev_Zaid}',id)
+          r.delete(f'print:gbangames:{id}{Dev_Zaid}')
           return m.reply(f'「 {mention} 」\n{k} لغيت حظره من الالعاب عام\n☆')
 
    if re.match("^الغاء الحظر العام (.*?)$", text) and len(text.split()) ==  4:
@@ -284,6 +308,7 @@ def mute_func(c,m,k):
       else:
           r.delete(f'{id}:gban:{Dev_Zaid}')
           r.srem(f'listGBAN:{Dev_Zaid}',id)
+          r.delete(f'print:gban:{id}{Dev_Zaid}')
           return m.reply(f'「 {mention} 」\n{k} لغيت حظره عام\n☆')
 
 @Client.on_message(filters.group, group=15)
@@ -342,13 +367,17 @@ def mute_funcg(c,m,k):
         mention = m.reply_to_message.from_user.mention
         if dev_pls(id, m.chat.id):
            rank = get_rank(id,m.chat.id)
-           return m.reply(f'{k} هييه مايمديك تكتم {rank} يورع!')
+           return m.reply(f'「 {mention} 」\n{k} عذراً، لا يمكنك كتم شخص يمتلك رتبة ( {rank} ) عام\n☆')
         if r.get(f'{id}:mute:{Dev_Zaid}'):
           return m.reply(f'「 {mention} 」\n{k} مكتوم عام من قبل\n☆')
         else:
           r.set(f'{id}:mute:{Dev_Zaid}', 1)
           r.sadd(f'listMUTE:{Dev_Zaid}', id)
-          return m.reply(f'「 {mention} 」\n{k} كتمته عام\n☆')
+          r.set(f'print:gmute:{id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+          bot_msg = m.reply(f'「 {mention} 」\n{k} كتمته عام\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):')
+          data = {"action": "كتم عام", "target_id": id, "mention": mention}
+          r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+          return bot_msg
       
    if text == 'حظر عام' and m.reply_to_message and m.reply_to_message.from_user:
         if not dev_pls(m.from_user.id,m.chat.id):
@@ -357,13 +386,17 @@ def mute_funcg(c,m,k):
         mention = m.reply_to_message.from_user.mention
         if dev_pls(id, m.chat.id):
            rank = get_rank(id,m.chat.id)
-           return m.reply(f'{k} هييه مايمديك تحظر {rank} يورع!')
+           return m.reply(f'「 {mention} 」\n{k} عذراً، لا يمكنك حظر شخص يمتلك رتبة ( {rank} )\n☆')
         if r.get(f'{id}:gban:{Dev_Zaid}'):
           return m.reply(f'{k} الحمار「 {mention} 」\n{k} محظور عام من قبل\n☆')
         else:
           r.set(f'{id}:gban:{Dev_Zaid}', 1)
           r.sadd(f'listGBAN:{Dev_Zaid}', id)
-          return m.reply(f'{k} الحمار「 {mention} 」\n{k} حظرته عام\n☆')
+          r.set(f'print:gban:{id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+          bot_msg = m.reply(f'{k} الحمار「 {mention} 」\n{k} حظرته عام\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):')
+          data = {"action": "حظر عام", "target_id": id, "mention": mention}
+          r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+          return bot_msg
    
    if text == 'حظر عام من الالعاب' and m.reply_to_message and m.reply_to_message.from_user:
         if not dev_pls(m.from_user.id,m.chat.id):
@@ -372,7 +405,7 @@ def mute_funcg(c,m,k):
         mention = m.reply_to_message.from_user.mention
         if dev_pls(id, m.chat.id):
            rank = get_rank(id,m.chat.id)
-           return m.reply(f'{k} هييه مايمديك تحظر {rank} يورع!')
+           return m.reply(f'「 {mention} 」\n{k} عذراً، لا يمكنك حظر شخص يمتلك رتبة ( {rank} )\n☆')
         if r.get(f'{id}:gbangames:{Dev_Zaid}'):
           return m.reply(f'{k} الحمار「 {mention} 」\n{k} محظور من الالعاب من قبل\n☆')
         else:
@@ -380,7 +413,11 @@ def mute_funcg(c,m,k):
           r.sadd(f'listGBANGAMES:{Dev_Zaid}', id)
           r.delete(f'{id}:Floos')
           r.srem("BankList",id)
-          return m.reply(f'{k} الحمار「 {mention} 」\n{k} حظرته عام من الالعاب\n☆')
+          r.set(f'print:gbangames:{id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+          bot_msg = m.reply(f'{k} الحمار「 {mention} 」\n{k} حظرته عام من الالعاب\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):')
+          data = {"action": "حظر عام من الالعاب", "target_id": id, "mention": mention}
+          r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+          return bot_msg
 
    if text == 'الغاء الكتم العام' and m.reply_to_message and m.reply_to_message.from_user:
         if not dev_pls(m.from_user.id,m.chat.id):
@@ -389,12 +426,13 @@ def mute_funcg(c,m,k):
         mention = m.reply_to_message.from_user.mention
         if dev_pls(id, m.chat.id):
            rank = get_rank(id,m.chat.id)
-           return m.reply(f'{k} هييه مايمديك تكتم {rank} يورع!')
+           return m.reply(f'「 {mention} 」\n{k} عذراً، لا يمكنك كتم شخص يمتلك رتبة ( {rank} ) عام\n☆')
         if not r.get(f'{id}:mute:{Dev_Zaid}'):
           return m.reply(f'「 {mention} 」\n{k} مو مكتوم عام من قبل\n☆')
         else:
           r.delete(f'{id}:mute:{Dev_Zaid}')
           r.srem(f'listMUTE:{Dev_Zaid}', id)
+          r.delete(f'print:gmute:{id}{Dev_Zaid}')
           return m.reply(f'「 {mention} 」\n{k} لغيت كتمته عام\n☆')
    
    if text == 'الغاء الحظر العام من الالعاب' and m.reply_to_message and m.reply_to_message.from_user:
@@ -404,12 +442,13 @@ def mute_funcg(c,m,k):
         mention = m.reply_to_message.from_user.mention
         if dev_pls(id, m.chat.id):
            rank = get_rank(id,m.chat.id)
-           return m.reply(f'{k} هييه مايمديك تكتم {rank} يورع!')
+           return m.reply(f'「 {mention} 」\n{k} عذراً، لا يمكنك كتم شخص يمتلك رتبة ( {rank} )\n☆')
         if not r.get(f'{id}:gbangames:{Dev_Zaid}'):
           return m.reply(f'「 {mention} 」\n{k} مو محظور من الالعاب من قبل\n☆')
         else:
           r.delete(f'{id}:gbangames:{Dev_Zaid}')
           r.srem(f'listGBANGAMES:{Dev_Zaid}', id)
+          r.delete(f'print:gbangames:{id}{Dev_Zaid}')
           return m.reply(f'「 {mention} 」\n{k} لغيت حظره من الالعاب\n☆')
 
    if text == 'الغاء الحظر العام' and m.reply_to_message and m.reply_to_message.from_user:
@@ -419,11 +458,12 @@ def mute_funcg(c,m,k):
         mention = m.reply_to_message.from_user.mention
         if dev_pls(id, m.chat.id):
            rank = get_rank(id,m.chat.id)
-           return m.reply(f'{k} هييه مايمديك تكتم {rank} يورع!')
+           return m.reply(f'「 {mention} 」\n{k} عذراً، لا يمكنك كتم شخص يمتلك رتبة ( {rank} )\n☆')
         if not r.get(f'{id}:gban:{Dev_Zaid}'):
           return m.reply(f'「 {mention} 」\n{k} مو محظور عام من قبل\n☆')
         else:
           r.delete(f'{id}:gban:{Dev_Zaid}')
           r.srem(f'listGBAN:{Dev_Zaid}', id)
+          r.delete(f'print:gban:{id}{Dev_Zaid}')
           return m.reply(f'「 {mention} 」\n{k} لغيت حظره عام\n☆')
    

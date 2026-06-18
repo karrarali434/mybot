@@ -1,4 +1,4 @@
-'''
+﻿'''
 
 
 ██████╗░██████╗░██████╗░
@@ -10,7 +10,7 @@
 
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 
 '''
 
@@ -60,7 +60,7 @@ def sarhniFunc(c,m,k):
      else:
        id = r.get(f'{m.from_user.id}:sar7ni:{Dev_Zaid}')
      r.set(f'{m.from_user.id}:sarhniname', m.from_user.first_name)
-     return m.reply(f'{k} أهلين عيني「 ⁪⁬⁪⁬{m.from_user.mention} 」\n{k} هذا رابط صارحني الخاص فيك', reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('📩',url=f't.me/{botUsername}?start=sarhni{id}')]]))
+     return m.reply(f'{k} أهلين عيني「 ⁪⁬⁪⁬{m.from_user.mention} 」\n{k} هذا رابط صارحني الخاص فيك', reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('📩',url=f'https://t.me/{botUsername}?start=sarhni{id}')]]))
 
 @Client.on_message(filters.private, group=2)
 def sarhniHandlerP(c,m):
@@ -83,7 +83,7 @@ def sarhniFuncP(c,m,k,channel):
             return m.reply('انت هطف تدخل رابط صراحة حقك؟')
           get = c.get_chat(user_id)
           r.set(f'{m.from_user.id}:sarhni',get.id,ex=300)
-          a = m.reply(f'{k} دخلت الحين رابط صارحني مع 「 ⁪⁬⁪⁬{get.first_name} 」\n{k} اي رسالة ترسلها لي راح احولها له بسرية تامة بدون مايعرفك\n༄',reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('الغاء', callback_data='sarhni:bye')],[InlineKeyboardButton ('🧚‍♀️',url=f't.me/{channel}')]]),quote=True)
+          a = m.reply(f'{k} دخلت الحين رابط صارحني مع 「 ⁪⁬⁪⁬{get.first_name} 」\n{k} اي رسالة ترسلها لي راح احولها له بسرية تامة بدون مايعرفك\n༄',reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ('الغاء', callback_data='sarhni:bye')],[InlineKeyboardButton ('🧚‍♀️',url=f'https://t.me/{channel}')]]),quote=True)
           return a.pin(both_sides=True)
       
       if r.get(f'{m.from_user.id}:sarhni') and len(text) < 1000:
@@ -101,7 +101,7 @@ def sarhniFuncP(c,m,k,channel):
               InlineKeyboardButton ('رد', callback_data=f'sarhni+rep{m.from_user.id}'),
             ],
             [
-              InlineKeyboardButton ('🧚‍♀️',url=f't.me/{channel}')
+              InlineKeyboardButton ('🧚‍♀️',url=f'https://t.me/{channel}')
             ]
           ]))
           return m.reply(f'{k} ابشر ارسلت رسالتك بسرية تامة لـ {name}',quote=True)
@@ -126,7 +126,7 @@ def sarhniFuncP(c,m,k,channel):
               InlineKeyboardButton ('رد', callback_data=f'sarhni+rep{m.from_user.id}'),
             ],
             [
-              InlineKeyboardButton ('🧚‍♀️',url=f't.me/{channel}')
+              InlineKeyboardButton ('🧚‍♀️',url=f'https://t.me/{channel}')
             ]
           ])
        )

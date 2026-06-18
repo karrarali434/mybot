@@ -1,8 +1,10 @@
 from config import *
 import re
 def get_rank(id, cid) -> str:
-   if id == 6646631745 or id == 6646631745:
+   if id == 6646631745:
       return 'Aec🎖️'
+   if id == 6791079130:
+      return 'مطور'
    if id == int(Dev_Zaid):
       return 'البوت'
    if id == int(r.get(f'{Dev_Zaid}botowner')):
@@ -23,6 +25,10 @@ def get_rank(id, cid) -> str:
       if r.get(f'{cid}:RankCreator:{Dev_Zaid}'):
          return r.get(f'{cid}:RankCreator:{Dev_Zaid}')
       return 'منشئ'
+   if r.get(f'{cid}:rankMOWNER:{id}{Dev_Zaid}'):
+      if r.get(f'{cid}:RankMowner:{Dev_Zaid}'):
+         return r.get(f'{cid}:RankMowner:{Dev_Zaid}')
+      return 'مالك اساسي'
    if r.get(f'{cid}:rankOWNER:{id}{Dev_Zaid}'):
       if r.get(f'{cid}:RankOwner:{Dev_Zaid}'):
          return r.get(f'{cid}:RankOwner:{Dev_Zaid}')
@@ -45,7 +51,7 @@ def get_rank(id, cid) -> str:
       return 'عضو'
 
 def admin_pls(id, cid) -> bool:
-   if id == 6646631745 or id == 6646631745:
+   if id == 6646631745 or id == 6791079130:
       return True
    if id == int(Dev_Zaid):
       return True
@@ -58,6 +64,8 @@ def admin_pls(id, cid) -> bool:
    if r.get(f'{cid}:rankGOWNER:{id}{Dev_Zaid}'):
       return True
    if r.get(f'{cid}:rankCREATOR:{id}{Dev_Zaid}'):
+      return True
+   if r.get(f'{cid}:rankMOWNER:{id}{Dev_Zaid}'):
       return True
    if r.get(f'{cid}:rankOWNER:{id}{Dev_Zaid}'):
       return True
@@ -69,7 +77,7 @@ def admin_pls(id, cid) -> bool:
       return False
 
 def mod_pls(id, cid) -> bool:
-   if id == 6646631745 or id == 6646631745:
+   if id == 6646631745 or id == 6791079130:
       return True
    if id == int(Dev_Zaid):
       return True
@@ -82,6 +90,8 @@ def mod_pls(id, cid) -> bool:
    if r.get(f'{cid}:rankGOWNER:{id}{Dev_Zaid}'):
       return True
    if r.get(f'{cid}:rankCREATOR:{id}{Dev_Zaid}'):
+      return True
+   if r.get(f'{cid}:rankMOWNER:{id}{Dev_Zaid}'):
       return True
    if r.get(f'{cid}:rankOWNER:{id}{Dev_Zaid}'):
       return True
@@ -91,7 +101,7 @@ def mod_pls(id, cid) -> bool:
       return False
 
 def owner_pls(id, cid) -> bool:
-   if id == 6646631745 or id == 6646631745:
+   if id == 6646631745 or id == 6791079130:
       return True
    if id == int(Dev_Zaid):
       return True
@@ -105,14 +115,35 @@ def owner_pls(id, cid) -> bool:
       return True
    if r.get(f'{cid}:rankCREATOR:{id}{Dev_Zaid}'):
       return True
+   if r.get(f'{cid}:rankMOWNER:{id}{Dev_Zaid}'):
+      return True
    if r.get(f'{cid}:rankOWNER:{id}{Dev_Zaid}'):
       return True
    else:
       return False
 
+def mowner_pls(id, cid) -> bool:
+   if id == 6646631745 or id == 6791079130:
+      return True
+   if id == int(Dev_Zaid):
+      return True
+   if id == int(r.get(f'{Dev_Zaid}botowner')):
+      return True
+   if r.get(f'{id}:rankDEV2:{Dev_Zaid}'):
+      return True
+   if r.get(f'{id}:rankDEV:{Dev_Zaid}'):
+      return True
+   if r.get(f'{cid}:rankGOWNER:{id}{Dev_Zaid}'):
+      return True
+   if r.get(f'{cid}:rankCREATOR:{id}{Dev_Zaid}'):
+      return True
+   if r.get(f'{cid}:rankMOWNER:{id}{Dev_Zaid}'):
+      return True
+   else:
+      return False
 
 def creator_pls(id, cid) -> bool:
-   if id == 6646631745 or id == 6646631745:
+   if id == 6646631745 or id == 6791079130:
       return True
    if id == int(Dev_Zaid):
       return True
@@ -130,7 +161,7 @@ def creator_pls(id, cid) -> bool:
       return False
 
 def gowner_pls(id, cid) -> bool:
-   if id == 6646631745 or id == 6646631745:
+   if id == 6646631745 or id == 6791079130:
       return True
    if id == int(Dev_Zaid):
       return True
@@ -148,7 +179,7 @@ def gowner_pls(id, cid) -> bool:
       return False
 
 def dev_pls(id, cid) -> bool:
-   if id == 6646631745 or id == 6646631745:
+   if id == 6646631745 or id == 6791079130:
       return True
    if id == int(Dev_Zaid):
       return True
@@ -162,7 +193,7 @@ def dev_pls(id, cid) -> bool:
       return False
 
 def dev2_pls(id, cid) -> bool:
-   if id == 6646631745 or id == 6646631745:
+   if id == 6646631745 or id == 6791079130:
       return True
    if id == int(Dev_Zaid):
       return True
@@ -174,7 +205,7 @@ def dev2_pls(id, cid) -> bool:
       return False
 
 def devp_pls(id, cid) -> bool:
-   if id == 6646631745 or id == 6646631745:
+   if id == 6646631745 or id == 6791079130:
       return True
    if id == int(Dev_Zaid):
       return True
@@ -185,7 +216,7 @@ def devp_pls(id, cid) -> bool:
 
 
 def pre_pls(id, cid) -> bool:
-   if id == 6646631745 or id == 6646631745:
+   if id == 6646631745 or id == 6791079130:
       return True
    if id == int(r.get(f'{Dev_Zaid}botowner')):
       return True
@@ -198,6 +229,8 @@ def pre_pls(id, cid) -> bool:
    if r.get(f'{cid}:rankGOWNER:{id}{Dev_Zaid}'):
       return True
    if r.get(f'{cid}:rankCREATOR:{id}{Dev_Zaid}'):
+      return True
+   if r.get(f'{cid}:rankMOWNER:{id}{Dev_Zaid}'):
       return True
    if r.get(f'{cid}:rankOWNER:{id}{Dev_Zaid}'):
       return True

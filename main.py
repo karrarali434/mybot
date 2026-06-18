@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import os
 import sys
 import logging
@@ -39,11 +39,15 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 import redis
 from pyrogram import Client, idle
-from config import token, Dev_Zaid, owner_id, r, botUsername
+from config import token, Dev_Zaid, owner_id, r, botUsername, IS_FACTORY
+
+plugins_config = {"root": "Plugins"}
+if not IS_FACTORY:
+    plugins_config["exclude"] = ["factory"]
 
 app = Client(f'{Dev_Zaid}r3d', 33763526, 'e2644b351ca9ebbe628dc6cd1a6d4b16',
     bot_token=token,
-    plugins={"root": "Plugins"}
+    plugins=plugins_config
 )
 
 if not r.get(f'{Dev_Zaid}:botkey'):
@@ -53,7 +57,7 @@ if not r.get(f'{Dev_Zaid}botname'):
     r.set(f'{Dev_Zaid}botname', 'رعد')
 
 if not r.get(f'{Dev_Zaid}botchannel'):
-    r.set(f'{Dev_Zaid}botchannel', 'GGGGG1S')
+    r.set(f'{Dev_Zaid}botchannel', 'W_WT1')
 
 async def main():
     print('''
@@ -73,6 +77,22 @@ async def main():
 ••••••••  -  •••••••••
 ''')
     
+    if IS_FACTORY:
+        try:
+            from helpers.bot_manager import init_db, get_all_bots, start_bot
+            init_db()
+            bots = get_all_bots()
+            for bot in bots:
+                if bot['status'] == 'running':
+                    print(f"Auto-starting bot {bot['username']}...")
+                    start_bot(bot['id'])
+        except Exception as e:
+            print(f"Error starting factory bots: {e}")
+
+    # Start auto-reload watcher (monitors Plugins/ and helpers/ for changes)
+    from helpers.auto_reload import start_watcher
+    start_watcher()
+    
     await app.start()
     
     # Send startup message
@@ -84,7 +104,9 @@ async def main():
             pass
 
     from Plugins.clean import auto_clean_function
+    from Plugins.fifa import fifa_league_task
     asyncio.create_task(auto_clean_function(app))
+    asyncio.create_task(fifa_league_task(app))
     
     await idle()
 

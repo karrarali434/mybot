@@ -19,6 +19,9 @@ __pycache__/
 # ===== Downloads =====
 downloads/
 
+# ===== Sub-bots (Factory Created) =====
+bots/
+
 # ===== OS Junk =====
 __MACOSX/
 .DS_Store
@@ -30,10 +33,21 @@ Desktop.ini
 .idea/
 *.swp
 *.swo
+.gemini/
 
 # ===== Logs =====
 *.log
 unknown_errors.txt
 
-# ===== Test Files =====
+# ===== Test & Debug Files =====
 test_out.json
+debug_messages.txt
+scratch_grep.txt
+search_*.txt
+all_handlers.txt
+all_welcome.txt
+repr.txt
+check_bots.py
+
+# ===== Temporary Scripts =====
+scripts/

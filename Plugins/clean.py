@@ -197,3 +197,52 @@ async def auto_clean_function(c: Client):
                             continue
         except Exception as e:
             print(f"Error in auto_clean_function: {e}")
+
+@Client.on_message(filters.regex(r"^مسح التعديل$") & filters.group, group=55)
+async def clear_edited_messages(c: Client, m: Message):
+    if not admin_pls(m.from_user.id, m.chat.id):
+        return
+        
+    k = await db.get(f"{ZAID}:botkey") or "•"
+    wait_msg = await m.reply(f"{k} جاري البحث عن الرسائل المعدلة ومسحها...")
+    
+    deleted_count = 0
+    msgs_to_delete = []
+    
+    try:
+        message_ids = list(range(m.id - 1, m.id - 1001, -1))
+        for i in range(0, len(message_ids), 100):
+            batch_ids = message_ids[i:i+100]
+            try:
+                msgs = await c.get_messages(m.chat.id, batch_ids)
+                for msg in msgs:
+                    if not msg or msg.empty:
+                        continue
+                    if msg.edit_date:
+                        msgs_to_delete.append(msg.id)
+            except FloodWait as e:
+                await asyncio.sleep(e.value)
+            except Exception:
+                pass
+                
+            if len(msgs_to_delete) >= 100:
+                try:
+                    await c.delete_messages(m.chat.id, msgs_to_delete)
+                    deleted_count += len(msgs_to_delete)
+                    msgs_to_delete.clear()
+                    await asyncio.sleep(0.5)
+                except FloodWait as e:
+                    await asyncio.sleep(e.value)
+                except Exception:
+                    pass
+                    
+        if msgs_to_delete:
+            try:
+                await c.delete_messages(m.chat.id, msgs_to_delete)
+                deleted_count += len(msgs_to_delete)
+            except Exception:
+                pass
+                
+        await wait_msg.edit(f"{k} تم مسح {deleted_count} رسالة معدلة بنجاح.")
+    except Exception as e:
+        await wait_msg.edit(f"حدث خطأ أثناء مسح التعديلات: {e}")

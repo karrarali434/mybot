@@ -1,8 +1,8 @@
-'''
+﻿'''
 
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 - XO Game (Tic-Tac-Toe)
 
 '''

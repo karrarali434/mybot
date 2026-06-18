@@ -1,4 +1,4 @@
-"""
+﻿"""
 
 
 ██████╗░██████╗░██████╗░
@@ -10,7 +10,7 @@
 
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 
 """
 
@@ -147,7 +147,7 @@ def welcomeRespons(c: Client, m: Message):
         return
     k = r.get(f"{Dev_Zaid}:botkey")
     channel = (
-        r.get(f"{Dev_Zaid}:BotChannel") if r.get(f"{Dev_Zaid}:BotChannel") else "GGGGG1S"
+        r.get(f"{Dev_Zaid}:BotChannel") if r.get(f"{Dev_Zaid}:BotChannel") else "W_WT1"
     )
     print("member")
     if not r.get(f"{m.chat.id}:disableWelcome:{Dev_Zaid}") and m.new_chat_members:
@@ -161,10 +161,6 @@ def welcomeRespons(c: Client, m: Message):
                     me.id, m.chat.id
                 ):
                     return
-                photo = None
-                if not r.get(f"{m.chat.id}:disableWelcomep:{Dev_Zaid}") and me.photo:
-                    for photo in c.get_chat_photos(me.id, limit=1):
-                        photo = photo.file_id
                 title = m.chat.title
                 name = me.first_name
                 if me.username:
@@ -192,10 +188,7 @@ def welcomeRespons(c: Client, m: Message):
                     .replace("{التاريخ}", date)
                     .replace("{اليوزر}", username)
                 )
-                if not photo:
-                    return m.reply(w, disable_web_page_preview=True)
-                else:
-                    return m.reply_photo(photo, caption=w)
+                return m.reply(w, disable_web_page_preview=True)
 
 
 """

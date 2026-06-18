@@ -1,4 +1,4 @@
-"""
+﻿"""
 
 
 ██████╗░██████╗░██████╗░
@@ -10,7 +10,7 @@
 
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 
 
 """
@@ -72,6 +72,122 @@ def _build_promote_keyboard(user_id, chat_id, perms):
         InlineKeyboardButton("إلغاء الكل ✖️", callback_data=f"prm_none_{user_id}_{chat_id}"),
     ])
     return InlineKeyboardMarkup(rows)
+
+
+def _print_report(c, m, target_id, mention, k):
+    """Generate and send a print report for a user's restrictions."""
+    report = f"📋 برنت العضو: {mention}\n"
+    report += f"🆔 الايدي: `{target_id}`\n"
+    report += "━━━━━━━━━━━━━━━\n\n"
+
+    # Check status from Telegram
+    is_banned = False
+    is_restricted = False
+    try:
+        member = m.chat.get_member(target_id)
+        is_banned = member.status == ChatMemberStatus.BANNED
+        is_restricted = member.status == ChatMemberStatus.RESTRICTED
+    except:
+        pass
+
+    # Check bot's Redis data
+    is_muted = bool(r.get(f'{target_id}:mute:{m.chat.id}{Dev_Zaid}'))
+    is_gmuted = bool(r.get(f'{target_id}:mute:{Dev_Zaid}'))
+    is_gbanned = bool(r.get(f'{target_id}:gban:{Dev_Zaid}'))
+    is_gbanned_games = bool(r.get(f'{target_id}:gbangames:{Dev_Zaid}'))
+
+    has_any = is_banned or is_restricted or is_muted or is_gmuted or is_gbanned or is_gbanned_games
+
+    # 1. Ban section
+    report += f"🔴 الحظر: {'✅ محظور' if is_banned else '❌ غير محظور'}\n"
+    ban_data = r.get(f'{m.chat.id}:print:ban:{target_id}{Dev_Zaid}')
+    if ban_data:
+        try:
+            bd = _json.loads(ban_data)
+            report += f"├ من قام بالحظر: [{bd.get('name', '؟')}](tg://user?id={bd.get('id', 0)})\n"
+            report += f"└ السبب: {bd.get('reason', 'لا يوجد')}\n"
+        except:
+            pass
+    report += "\n"
+
+    # 2. Restrict section
+    report += f"🟡 التقييد: {'✅ مقيد' if is_restricted else '❌ غير مقيد'}\n"
+    restrict_data = r.get(f'{m.chat.id}:print:restrict:{target_id}{Dev_Zaid}')
+    if restrict_data:
+        try:
+            rd = _json.loads(restrict_data)
+            report += f"├ من قام بالتقييد: [{rd.get('name', '؟')}](tg://user?id={rd.get('id', 0)})\n"
+            report += f"└ السبب: {rd.get('reason', 'لا يوجد')}\n"
+        except:
+            pass
+    report += "\n"
+
+    # 3. Mute section
+    report += f"🔵 الكتم: {'✅ مكتوم' if is_muted else '❌ غير مكتوم'}\n"
+    mute_data = r.get(f'{m.chat.id}:print:mute:{target_id}{Dev_Zaid}')
+    if mute_data:
+        try:
+            md = _json.loads(mute_data)
+            report += f"├ من قام بالكتم: [{md.get('name', '؟')}](tg://user?id={md.get('id', 0)})\n"
+            report += f"└ السبب: {md.get('reason', 'لا يوجد')}\n"
+        except:
+            pass
+    report += "\n"
+
+    # 4. Global ban
+    report += f"🟣 الحظر العام: {'✅ محظور عام' if is_gbanned else '❌ غير محظور عام'}\n"
+    gban_data = r.get(f'print:gban:{target_id}{Dev_Zaid}')
+    if gban_data:
+        try:
+            gd = _json.loads(gban_data)
+            report += f"├ من قام بالحظر: [{gd.get('name', '؟')}](tg://user?id={gd.get('id', 0)})\n"
+            report += f"└ السبب: {gd.get('reason', 'لا يوجد')}\n"
+        except:
+            pass
+    report += "\n"
+
+    # 5. Global mute
+    report += f"🟤 الكتم العام: {'✅ مكتوم عام' if is_gmuted else '❌ غير مكتوم عام'}\n"
+    gmute_data = r.get(f'print:gmute:{target_id}{Dev_Zaid}')
+    if gmute_data:
+        try:
+            gmd = _json.loads(gmute_data)
+            report += f"├ من قام بالكتم: [{gmd.get('name', '؟')}](tg://user?id={gmd.get('id', 0)})\n"
+            report += f"└ السبب: {gmd.get('reason', 'لا يوجد')}\n"
+        except:
+            pass
+    report += "\n"
+
+    # 6. Games global ban
+    report += f"🟠 حظر الالعاب: {'✅ محظور' if is_gbanned_games else '❌ غير محظور'}\n"
+    gbgames_data = r.get(f'print:gbangames:{target_id}{Dev_Zaid}')
+    if gbgames_data:
+        try:
+            ggd = _json.loads(gbgames_data)
+            report += f"├ من قام بالحظر: [{ggd.get('name', '؟')}](tg://user?id={ggd.get('id', 0)})\n"
+            report += f"└ السبب: {ggd.get('reason', 'لا يوجد')}\n"
+        except:
+            pass
+    report += "\n"
+
+    # 7. Kick history
+    kick_data = r.get(f'{m.chat.id}:print:kick:{target_id}{Dev_Zaid}')
+    if kick_data:
+        try:
+            kd = _json.loads(kick_data)
+            report += f"⚪ الطرد: ✅ تم طردة مسبقاً\n"
+            report += f"├ من قام بالطرد: [{kd.get('name', '؟')}](tg://user?id={kd.get('id', 0)})\n"
+            report += f"└ السبب: {kd.get('reason', 'لا يوجد')}\n"
+            has_any = True
+        except:
+            pass
+
+    report += "\n━━━━━━━━━━━━━━━\n"
+    if not has_any:
+        report += f"{k} العضو ماعليه اي قيود ☆"
+    else:
+        report += "☆"
+    return m.reply(report, disable_web_page_preview=True)
 
 
 list_UwU = [
@@ -231,7 +347,7 @@ async def on_zbi(c: Client, m: Message):
         return m.continue_propagation()
 
     if dev_pls(m.from_user.id, m.chat.id):
-        return
+        return m.continue_propagation()
 
     if text and (
         text.startswith("تفعيل ")
@@ -465,6 +581,14 @@ def guardResponseFunction(c, m, k, channel):
         for mem in m.new_chat_members:
             if mem.is_bot:
                 return m.chat.ban_member(mem.id)
+
+    if r.get(f"{m.chat.id}:lockBotsKick:{Dev_Zaid}") and m.new_chat_members:
+        for mem in m.new_chat_members:
+            if mem.is_bot:
+                if not admin_pls(mem.id, m.chat.id):
+                    m.chat.ban_member(mem.id)
+                    m.chat.unban_member(mem.id)
+                    return False
 
     if r.get(f"{m.chat.id}:lockJoin:{Dev_Zaid}") and m.new_chat_members:
         for mem in m.new_chat_members:
@@ -1293,29 +1417,77 @@ def guardCommands(c, m, k, channel):
 {k} ميلادي ↢ {geo_date} {geo_month}
 """)
 
+    if text.startswith("تغيير كليشة المالك "):
+        if not gowner_pls(m.from_user.id, m.chat.id):
+            return m.reply(f"{k} هذا الأمر يخص ( المالك الاساسي وفوق ) بس")
+        new_caption = text.replace("تغيير كليشة المالك ", "")
+        r.set(f"{m.chat.id}:OwnerCaption:{Dev_Zaid}", new_caption)
+        return m.reply(f"{k} تم حفظ كليشة المالك بنجاح.\\n\\nيمكنك استخدام المتغيرات:\\n`{{mention}}` - لمنشن المالك\\n`{{username}}` - لمعرف المالك\\n`{{id}}` - لايدي المالك")
+
+    if text == "مسح كليشة المالك":
+        if not gowner_pls(m.from_user.id, m.chat.id):
+            return m.reply(f"{k} هذا الأمر يخص ( المالك الاساسي وفوق ) بس")
+        r.delete(f"{m.chat.id}:OwnerCaption:{Dev_Zaid}")
+        return m.reply(f"{k} تم مسح كليشة المالك والعودة للافتراضية.")
+
+    if text == "تغيير المالك" and m.reply_to_message and m.reply_to_message.from_user:
+        if not gowner_pls(m.from_user.id, m.chat.id):
+            return m.reply(f"{k} هذا الأمر يخص ( المالك الاساسي وفوق ) بس")
+        new_owner_id = m.reply_to_message.from_user.id
+        r.set(f"{m.chat.id}:CustomOwner:{Dev_Zaid}", new_owner_id)
+        return m.reply(f"{k} تم تعيين {m.reply_to_message.from_user.mention} كمالك للمجموعة في البوت.")
+
+    if text == "مسح المالك":
+        if not gowner_pls(m.from_user.id, m.chat.id):
+            return m.reply(f"{k} هذا الأمر يخص ( المالك الاساسي وفوق ) بس")
+        r.delete(f"{m.chat.id}:CustomOwner:{Dev_Zaid}")
+        return m.reply(f"{k} تم مسح المالك المخصص والعودة لمالك المجموعة الحقيقي.")
+
     if text == "المالك":
         owner = None
-        for mm in m.chat.get_members(filter=ChatMembersFilter.ADMINISTRATORS):
-            if mm.status == ChatMemberStatus.OWNER:
-                owner = mm.user
-                break
+        custom_owner_id = r.get(f"{m.chat.id}:CustomOwner:{Dev_Zaid}")
+        
+        if custom_owner_id:
+            try:
+                owner = c.get_users(int(custom_owner_id))
+            except:
+                pass
+
+        if not owner:
+            for mm in m.chat.get_members(filter=ChatMembersFilter.ADMINISTRATORS):
+                if mm.status == ChatMemberStatus.OWNER:
+                    owner = mm.user
+                    break
+                    
         if owner:
-            if owner.is_deleted:
+            if getattr(owner, 'is_deleted', False):
                 m.reply("حساب المالك محذوف")
             else:
                 owner_username = owner.username if owner.username else owner.id
-                caption = f"• Owner ☆ ↦ {owner.mention}\n\n"
-                caption += f"• Owner User ↦ @{owner_username}"
+                
+                custom_caption = r.get(f"{m.chat.id}:OwnerCaption:{Dev_Zaid}")
+                if custom_caption:
+                    caption = custom_caption.replace("{mention}", owner.mention).replace("{username}", str(owner_username)).replace("{id}", str(owner.id))
+                else:
+                    caption = f"• Owner ☆ ↦ {owner.mention}\\n\\n"
+                    caption += f"• Owner User ↦ @{owner_username}"
+                    
                 if owner.photo:
-                    file_id = owner.photo.big_file_id
-                    photo_path = c.download_media(file_id)
-                    button = InlineKeyboardMarkup(
-                        [[InlineKeyboardButton(owner.first_name, user_id=owner.id)]]
-                    )
-                    m.reply_photo(
-                        photo=photo_path, caption=caption, reply_markup=button
-                    )
-                    os.remove(photo_path)
+                    try:
+                        file_id = owner.photo.big_file_id
+                        photo_path = c.download_media(file_id)
+                        button = InlineKeyboardMarkup(
+                            [[InlineKeyboardButton(owner.first_name, user_id=owner.id)]]
+                        )
+                        m.reply_photo(
+                            photo=photo_path, caption=caption, reply_markup=button
+                        )
+                        os.remove(photo_path)
+                    except:
+                        button = InlineKeyboardMarkup(
+                            [[InlineKeyboardButton(owner.first_name, user_id=owner.id)]]
+                        )
+                        m.reply(caption, reply_markup=button)
                 else:
                     button = InlineKeyboardMarkup(
                         [[InlineKeyboardButton(owner.first_name, user_id=owner.id)]]
@@ -1487,6 +1659,20 @@ def guardCommands(c, m, k, channel):
                 r.set(f"{m.chat.id}:disableWelcome:{Dev_Zaid}", 1)
                 return m.reply(
                     f"{k} من「 {m.from_user.mention} 」\n{k} ابشر عطلت الترحيب\n☆"
+                )
+
+    if text == "تفعيل الترحيب":
+        if not mod_pls(m.from_user.id, m.chat.id):
+            return m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+        else:
+            if not r.get(f"{m.chat.id}:disableWelcome:{Dev_Zaid}"):
+                return m.reply(
+                    f"{k} من「 {m.from_user.mention} 」\n{k} الترحيب مفعل من قبل\n☆"
+                )
+            else:
+                r.delete(f"{m.chat.id}:disableWelcome:{Dev_Zaid}")
+                return m.reply(
+                    f"{k} من「 {m.from_user.mention} 」\n{k} ابشر فعلت الترحيب\n☆"
                 )
 
     if text == "تعطيل الترحيب بالصورة" or text == "تعطيل الترحيب بالصوره":
@@ -2501,6 +2687,41 @@ def guardCommands(c, m, k, channel):
                 r.delete(f"{m.chat.id}:lockBots:{Dev_Zaid}")
                 return m.reply(Open.format(k, m.from_user.mention, k, "البوتات"))
 
+    if text == "قفل البوتات بالطرد":
+        if not mod_pls(m.from_user.id, m.chat.id):
+            return m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+        else:
+            if r.get(f"{m.chat.id}:lockBotsKick:{Dev_Zaid}"):
+                return m.reply(locknn.format(k, m.from_user.mention, k, "البوتات بالطرد"))
+            else:
+                r.set(f"{m.chat.id}:lockBotsKick:{Dev_Zaid}", 1)
+                m.reply(lock.format(k, m.from_user.mention, k, "البوتات بالطرد"))
+                co = 0
+                try:
+                    for mm in m.chat.get_members(filter=ChatMembersFilter.BOTS):
+                        if not admin_pls(mm.user.id, m.chat.id):
+                            try:
+                                m.chat.ban_member(mm.user.id)
+                                m.chat.unban_member(mm.user.id)
+                                co += 1
+                            except:
+                                pass
+                except:
+                    pass
+                if co > 0:
+                    m.reply(f"{k} تم طرد ( {co} ) بوت ليس لديه إشراف\n☆")
+                return True
+
+    if text == "فتح البوتات بالطرد":
+        if not mod_pls(m.from_user.id, m.chat.id):
+            return m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
+        else:
+            if not r.get(f"{m.chat.id}:lockBotsKick:{Dev_Zaid}"):
+                return m.reply(Openn2.format(k, m.from_user.mention, k, "البوتات بالطرد"))
+            else:
+                r.delete(f"{m.chat.id}:lockBotsKick:{Dev_Zaid}")
+                return m.reply(Open.format(k, m.from_user.mention, k, "البوتات بالطرد"))
+
     if text == "قفل اليوزرات" or text == "قفل المنشن":
         if not mod_pls(m.from_user.id, m.chat.id):
             return m.reply(f"{k} هذا الامر يخص ( المدير وفوق ) بس")
@@ -3283,7 +3504,11 @@ def guardCommands(c, m, k, channel):
             c.restrict_chat_member(
                 m.chat.id, get.user.id, ChatPermissions(can_send_messages=False)
             )
-            return m.reply(f"「 {get.user.mention} 」 \n{k} قييدته\n☆")
+            r.set(f'{m.chat.id}:print:restrict:{get.user.id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+            bot_msg = m.reply(f"「 {get.user.mention} 」 \n{k} قييدته\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):")
+            data = {"action": "تقييد", "target_id": get.user.id, "mention": get.user.mention}
+            r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+            return bot_msg
 
     if text == "تقييد" and m.reply_to_message and m.reply_to_message.from_user:
         if not mod_pls(m.from_user.id, m.chat.id):
@@ -3304,9 +3529,13 @@ def guardCommands(c, m, k, channel):
                 m.reply_to_message.from_user.id,
                 ChatPermissions(can_send_messages=False),
             )
-            return m.reply(
-                f"「 {m.reply_to_message.from_user.mention} 」 \n{k} قييدته\n☆"
+            r.set(f'{m.chat.id}:print:restrict:{m.reply_to_message.from_user.id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+            bot_msg = m.reply(
+                f"「 {m.reply_to_message.from_user.mention} 」 \n{k} قييدته\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):"
             )
+            data = {"action": "تقييد", "target_id": m.reply_to_message.from_user.id, "mention": m.reply_to_message.from_user.mention}
+            r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+            return bot_msg
 
     if (
         text.startswith("الغاء تقييد ")
@@ -3373,6 +3602,32 @@ def guardCommands(c, m, k, channel):
             return m.reply(
                 f"「 {m.reply_to_message.from_user.mention} 」 \n{k} ابشر الغيت تقييده\n☆"
             )
+
+    # ===== أمر برنت - تقرير القيود =====
+    if text == "برنت" and m.reply_to_message and m.reply_to_message.from_user:
+        if not gowner_pls(m.from_user.id, m.chat.id):
+            return m.reply(f"{k} هذا الأمر يخص ( المالك الاساسي وفوق ) بس")
+        target_id = m.reply_to_message.from_user.id
+        mention = m.reply_to_message.from_user.mention
+        return _print_report(c, m, target_id, mention, k)
+
+    if text.startswith("برنت ") and len(text.split()) == 2:
+        if not '@' in text and not re.findall('[0-9]+', text):
+            return
+        if not gowner_pls(m.from_user.id, m.chat.id):
+            return m.reply(f"{k} هذا الأمر يخص ( المالك الاساسي وفوق ) بس")
+        user = text.split()[1]
+        try:
+            target_id = int(user)
+        except:
+            target_id = user.replace('@', '')
+        try:
+            get_user = c.get_users(str(target_id).lstrip('@'))
+            target_id = get_user.id
+            mention = f'[{get_user.first_name}](tg://user?id={get_user.id})'
+        except:
+            return m.reply(f'{k} مافيه يوزر كذا')
+        return _print_report(c, m, target_id, mention, k)
 
     if text == "المحظورين":
         if not mod_pls(m.from_user.id, m.chat.id):
@@ -3444,7 +3699,11 @@ def guardCommands(c, m, k, channel):
             except:
                 return m.reply(f"{k} مافي عضو بهذا اليوزر")
             m.chat.ban_member(get.user.id)
-            return m.reply(f"「 {get.user.mention} 」 \n{k} حظرته\n☆")
+            r.set(f'{m.chat.id}:print:ban:{get.user.id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+            bot_msg = m.reply(f"「 {get.user.mention} 」 \n{k} حظرته\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):")
+            data = {"action": "حظر", "target_id": get.user.id, "mention": get.user.mention}
+            r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+            return bot_msg
 
     if text == "حظر" and m.reply_to_message and m.reply_to_message.from_user:
         if not mod_pls(m.from_user.id, m.chat.id):
@@ -3461,9 +3720,13 @@ def guardCommands(c, m, k, channel):
                     f"「 {m.reply_to_message.from_user.mention} 」 \n{k} محظور من قبل\n☆"
                 )
             m.chat.ban_member(m.reply_to_message.from_user.id)
-            return m.reply(
-                f"「 {m.reply_to_message.from_user.mention} 」 \n{k} حظرته\n☆"
+            r.set(f'{m.chat.id}:print:ban:{m.reply_to_message.from_user.id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+            bot_msg = m.reply(
+                f"「 {m.reply_to_message.from_user.mention} 」 \n{k} حظرته\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):"
             )
+            data = {"action": "حظر", "target_id": m.reply_to_message.from_user.id, "mention": m.reply_to_message.from_user.mention}
+            r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+            return bot_msg
 
     if text == "طرد البوتات":
         if not owner_pls(m.from_user.id, m.chat.id):
@@ -3504,7 +3767,11 @@ def guardCommands(c, m, k, channel):
                 return m.reply(f"{k} مافي عضو بهذا اليوزر")
             m.chat.ban_member(get.user.id)
             m.chat.unban_member(get.user.id)
-            return m.reply(f"「 {get.user.mention} 」 \n{k} طردته\n☆")
+            bot_msg = m.reply(f"「 {get.user.mention} 」 \n{k} طردته\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):")
+            data = {"action": "طرد", "target_id": get.user.id, "mention": get.user.mention}
+            r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+            r.set(f'{m.chat.id}:print:kick:{get.user.id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+            return bot_msg
 
     if text == "اهمس" and m.reply_to_message and m.reply_to_message.from_user:
         if r.get(f"{m.chat.id}:disableWHISPER:{Dev_Zaid}"):
@@ -3523,7 +3790,7 @@ def guardCommands(c, m, k, channel):
                         [
                             InlineKeyboardButton(
                                 f"اهمس الى [ {m.reply_to_message.from_user.first_name[:25]} ]",
-                                url=f"t.me/{c.me.username}?start=hmsa{id}",
+                                url=f"https://t.me/{c.me.username}?start=hmsa{id}",
                             )
                         ]
                     ]
@@ -3603,8 +3870,12 @@ def guardCommands(c, m, k, channel):
                         f"「 {m.reply_to_message.from_user.mention} 」 \n{k} مطرود من قبل\n☆"
                     )
                 m.chat.ban_member(m.reply_to_message.from_user.id)
-                m.reply(f"「 {m.reply_to_message.from_user.mention} 」 \n{k} طردته\n☆")
-                return m.chat.unban_member(m.reply_to_message.from_user.id)
+                bot_msg = m.reply(f"「 {m.reply_to_message.from_user.mention} 」 \n{k} طردته\n☆\n\nقم بالرد على هذه الرسالة لكتابة السبب (أو تجاهلها):")
+                m.chat.unban_member(m.reply_to_message.from_user.id)
+                data = {"action": "طرد", "target_id": m.reply_to_message.from_user.id, "mention": m.reply_to_message.from_user.mention}
+                r.set(f"reason_req:{bot_msg.id}:{m.chat.id}", _json.dumps(data), ex=300)
+                r.set(f'{m.chat.id}:print:kick:{m.reply_to_message.from_user.id}{Dev_Zaid}', _json.dumps({"id": m.from_user.id, "name": m.from_user.first_name, "time": int(time.time()), "reason": "لا يوجد"}))
+                return bot_msg
             except:
                 return m.reply(f"{k} العضو مو بالمجموعة")
 
@@ -3629,6 +3900,7 @@ def guardCommands(c, m, k, channel):
             except:
                 return m.reply(f"{k} مافي عضو بهذا اليوزر")
             m.chat.unban_member(get.user.id)
+            r.delete(f'{m.chat.id}:print:ban:{get.user.id}{Dev_Zaid}')
             return m.reply(f"「 {get.user.mention} 」 \n{k} ابشر الغيت حظره\n☆")
 
     if (
@@ -3647,6 +3919,7 @@ def guardCommands(c, m, k, channel):
                         f"「 {m.reply_to_message.from_user.mention} 」 \n{k} مو محظور من قبل\n☆"
                     )
                 m.chat.unban_member(m.reply_to_message.from_user.id)
+                r.delete(f'{m.chat.id}:print:ban:{m.reply_to_message.from_user.id}{Dev_Zaid}')
                 return m.reply(
                     f"「 {m.reply_to_message.from_user.mention} 」 \n{k} ابشر الغيت حظره\n☆"
                 )
@@ -3960,7 +4233,7 @@ def guardCommands(c, m, k, channel):
                 else "eeeCASH"
             )
             return m.reply(
-                f"{k} اهلين فيك باوامر البوت\n\nللاستفسار - @GGGGG1S",
+                f"{k} اهلين فيك باوامر البوت\n\nللاستفسار - @W_WT1",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -4003,6 +4276,53 @@ def guardCommands(c, m, k, channel):
         else:
             return m.reply(f"{k} هذا الأمر يخص ( الادمن وفوق ) بس")
 
+    if text == "الالعاب":
+        return m.reply(
+            """
+☤ تفعيل الالعاب
+☤ تعطيل الالعاب
+    ╼╾
+✽ جمل
+✽ كلمات
+✽ اغاني
+✽ دين
+✽ عربي
+✽ اكمل
+✽ صور
+✽ كت تويت
+✽ مؤقت
+✽ اعلام
+✽ معاني
+✽ تخمين
+✽ احكام
+✽ ارقام
+✽ احسب
+✽ خواتم
+✽ انقليزي
+✽ ترتيب
+✽ انمي
+✽ تركيب
+✽ تفكيك
+✽ عواصم
+✽ روليت
+✽ سيارات
+✽ ايموجي
+✽ حجره
+✽ تشفير
+✽ كره قدم
+✽ ديمون
+✽ القلاع
+✽ الغزاة
+✽ النوادي
+✽ اكس او
+✽ لغز
+╼╾
+❖ فلوسي ↼ عشان تشوف فلوسك
+❖ بيع فلوسي + العدد ↼ للأستبدال
+            """
+        )
+
+
 
 @Client.on_callback_query(group=1)
 def CallbackQueryHandler(c, m):
@@ -4019,18 +4339,20 @@ def CallbackQueryResponse(c, m, channel):
     if m.data == f"commands1:{m.from_user.id}":
         m.edit_message_text(
             f"""
-للاستفسار - @GGGGG1S
+للاستفسار - @W_WT1
 
 
 ❨ اوامر الرفع والتنزيل ❩
 
-⌯ رفع ↣ ↢ تنزيل مشرف
+⌯ رفع ↣ ↢ تنزيل مميز
+⌯ رفع ↣ ↢ تنزيل ادمن
+⌯ رفع ↣ ↢ تنزيل مدير
+⌯ رفع ↣ ↢ تنزيل مالك
 ⌯ رفع ↣ ↢ تنزيل مالك اساسي
 ⌯ رفع ↣ ↢ تنزيل منشئ
-⌯ رفع ↣ ↢ تنزيل مالك
-⌯ رفع ↣ ↢ تنزيل مدير
-⌯ رفع ↣ ↢ تنزيل ادمن
-⌯ رفع ↣ ↢ تنزيل مميز
+⌯ رفع ↣ ↢ تنزيل منشئ اساسي
+⌯ رفع ↣ ↢ تنزيل مطور
+⌯ رفع ↣ ↢ تنزيل مشرف
 ⌯ تنزيل الكل  ↢ بالرد  ↢ لتنزيل الشخص من جميع رتبه
 ⌯ مسح الكل  ↢ بدون رد  ↢ لتنزيل كل رتب المجموعة
 
@@ -4052,6 +4374,7 @@ def CallbackQueryResponse(c, m, channel):
 ⌯ مسح بالرد
 ⌯ مسح الترحيب
 ⌯ مسح قائمة التثبيت
+⌯ مسح التعديل
 
 ❨ اوامر الطرد الحظر الكتم ❩
 
@@ -4063,6 +4386,7 @@ def CallbackQueryResponse(c, m, channel):
 ⌯ الغاء الكتم ↢ ❨ بالرد،بالمعرف،بالايدي ❩
 ⌯ الغاء التقييد ↢ ❨ بالرد،بالمعرف،بالايدي ❩
 ⌯ رفع القيود ↢ لحذف الكتم,الحظر,التقييد
+⌯ برنت ↢ ❨ بالرد،بالمعرف،بالايدي ❩ لمعرفة قيود العضو
 ⌯ منع الكلمة
 ⌯ منع بالرد على قيف او ستيكر
 ⌯ الغاء منع الكلمة
@@ -4134,7 +4458,7 @@ def CallbackQueryResponse(c, m, channel):
     if m.data == f"commands2:{m.from_user.id}":
         m.edit_message_text(
             f"""
-للاستفسار - @GGGGG1S
+للاستفسار - @W_WT1
 
 
 ❨ اوامر الوضع ❩
@@ -4143,10 +4467,14 @@ def CallbackQueryResponse(c, m, channel):
 ⌯ وضع قوانين
 ⌯ تغيير رتبه
 ⌯ تغيير امر
+⌯ تغيير كليشة المالك
+⌯ تغيير المالك
+
 
 ❨ اوامر رؤية الاعدادات ❩
 
 ⌯ المطورين
+⌯ المنشئين الاساسيين
 ⌯ المالكيين الاساسيين
 ⌯ المالكيين
 ⌯ الادمنيه
@@ -4208,7 +4536,7 @@ def CallbackQueryResponse(c, m, channel):
     if m.data == f"commands3:{m.from_user.id}":
         m.edit_message_text(
             f"""
-للاستفسار - @GGGGG1S
+للاستفسار - @W_WT1
 
 
 ❨ اوامر الردود ❩
@@ -4270,6 +4598,7 @@ def CallbackQueryResponse(c, m, channel):
 ⌯ تفعيل ↣ ↢ تعطيل الرابط العادي
 ⌯ تفعيل ↣ ↢ تعطيل اطردني
 ⌯ تفعيل ↣ ↢ تعطيل الحماية
+⌯ تفعيل ↣ ↢ تعطيل حماية التلاعب
 ⌯ تفعيل ↣ ↢ تعطيل الوضع الليلي
 ⌯ تفعيل ↣ ↢ تعطيل المنشن
 ⌯ تفعيل ↣ ↢ تعطيل التحقق
@@ -4278,6 +4607,12 @@ def CallbackQueryResponse(c, m, channel):
 ⌯ تفعيل ↣ ↢ تعطيل البايو
 ⌯ تفعيل ↣ ↢ تعطيل انطقي
 ⌯ تفعيل ↣ ↢ تعطيل شازام
+
+❨ اوامر التنظيف التلقائي ❩
+
+⌯ تفعيل ↣ ↢ تعطيل التنظيف
+⌯ وضع وقت التنظيف + [العدد بالثواني]
+⌯ وقت التنظيف
 """,
             reply_markup=InlineKeyboardMarkup(
                 [
@@ -4353,6 +4688,11 @@ def CallbackQueryResponse(c, m, channel):
 ✽ تشفير
 ✽ كره قدم
 ✽ ديمون
+✽ القلاع
+✽ الغزاة
+✽ النوادي
+✽ اكس او
+✽ لغز
 ╼╾
 ❖ فلوسي ↼ عشان تشوف فلوسك
 ❖ بيع فلوسي + العدد ↼ للأستبدال
@@ -4399,7 +4739,7 @@ def CallbackQueryResponse(c, m, channel):
     if m.data == f"commands5:{m.from_user.id}":
         m.edit_message_text(
             f"""
-للاستفسار - @GGGGG1S
+للاستفسار - @W_WT1
 
 🍰 ⌯ رفع ↣ ↢ تنزيل كيكه
 🍯 ⌯ رفع ↣ ↢ تنزيل عسل
@@ -4697,7 +5037,7 @@ def CallbackQueryResponse(c, m, channel):
 ☆
 """,
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
+                [[InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")]]
             ),
         )
 
@@ -4805,7 +5145,7 @@ def CallbackQueryResponse(c, m, channel):
                             "توب الحرامية 💰", callback_data=f"topzrf:{m.from_user.id}"
                         ),
                     ],
-                    [InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")],
+                    [InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")],
                 ]
             )
             if r.get("BankTop"):
@@ -4881,7 +5221,7 @@ def CallbackQueryResponse(c, m, channel):
                         ),
                         InlineKeyboardButton("‣ 💰", callback_data="None"),
                     ],
-                    [InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")],
+                    [InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")],
                 ]
             )
             if r.get("BankTopZRF"):
@@ -4956,7 +5296,7 @@ def CallbackQueryResponse(c, m, channel):
        text += r.get(f'BankTopLastZrf')
        text += '\n༄'
        rep = InlineKeyboardMarkup (
-         [[InlineKeyboardButton ('🧚‍♀️', url=f't.me/{channel}')]]
+         [[InlineKeyboardButton ('🧚‍♀️', url=f'https://t.me/{channel}')]]
        )
        m.edit_message_text(text, disable_web_page_preview=True,reply_markup=rep)
    """
@@ -4972,7 +5312,7 @@ def CallbackQueryResponse(c, m, channel):
             else:
                 r.set(f"{m.from_user.id}:Floos", 1)
             rep = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
+                [[InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")]]
             )
             m.edit_message_text(
                 f"""
@@ -4987,7 +5327,7 @@ def CallbackQueryResponse(c, m, channel):
 
         if kk == "paper":
             rep = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
+                [[InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")]]
             )
             m.edit_message_text(
                 f"""
@@ -5001,7 +5341,7 @@ def CallbackQueryResponse(c, m, channel):
             )
         if kk == "rock":
             rep = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
+                [[InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")]]
             )
             m.edit_message_text(
                 f"""
@@ -5079,7 +5419,7 @@ def CallbackQueryResponse(c, m, channel):
             else:
                 r.set(f"{m.from_user.id}:Floos", 1)
             rep = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
+                [[InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")]]
             )
             m.edit_message_text(
                 f"""
@@ -5094,7 +5434,7 @@ def CallbackQueryResponse(c, m, channel):
 
         if kk == "scissors":
             rep = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
+                [[InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")]]
             )
             m.edit_message_text(
                 f"""
@@ -5108,7 +5448,7 @@ def CallbackQueryResponse(c, m, channel):
             )
         if kk == "paper":
             rep = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
+                [[InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")]]
             )
             m.edit_message_text(
                 f"""
@@ -5131,7 +5471,7 @@ def CallbackQueryResponse(c, m, channel):
             else:
                 r.set(f"{m.from_user.id}:Floos", 1)
             rep = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
+                [[InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")]]
             )
             m.edit_message_text(
                 f"""
@@ -5146,7 +5486,7 @@ def CallbackQueryResponse(c, m, channel):
 
         if kk == "rock":
             rep = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
+                [[InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")]]
             )
             m.edit_message_text(
                 f"""
@@ -5160,7 +5500,7 @@ def CallbackQueryResponse(c, m, channel):
             )
         if kk == "scissors":
             rep = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🧚‍♀️", url=f"t.me/{channel}")]]
+                [[InlineKeyboardButton("🧚‍♀️", url=f"https://t.me/{channel}")]]
             )
             m.edit_message_text(
                 f"""

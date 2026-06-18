@@ -1,7 +1,7 @@
-'''
+﻿'''
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 
 '''
 
@@ -89,6 +89,9 @@ async def sleep_and_delete(client, chat_id, message):
 async def to_send(c: Client, m: Message):
    if not getattr(m, 'from_user', None): return
    if not m.from_user: return
+   # If IS_FACTORY, let factory.py handle /start exclusively
+   if IS_FACTORY and m.text and m.text.strip().startswith('/start') and not m.text.strip().startswith('/start hmsa') and not m.text.strip().startswith('/start openhms'):
+      return
    if m.text and re.match("^/start hmsa", m.text):
       return await on_send_hmsa(c, m)
    k = r.get(f'{Dev_Zaid}:botkey')
@@ -186,6 +189,8 @@ async def to_send(c: Client, m: Message):
 @Client.on_message(filters.text & filters.private, group=1)
 def delRanksHandler(c,m):
     if not getattr(m, 'from_user', None): return
+    if IS_FACTORY and m.text and m.text.startswith('/start'):
+        return
     k = r.get(f'{Dev_Zaid}:botkey')
     Thread(target=private_func,args=(c,m,k)).start()
     
@@ -196,6 +201,9 @@ def private_func(c,m,k):
   #r.set(f'DevGroup:{Dev_Zaid}'
   name = r.get(f'{Dev_Zaid}:BotName') if r.get(f'{Dev_Zaid}:BotName') else 'اتاك'
   channel= r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'eeeCASH'
+  # If IS_FACTORY, skip normal /start - factory.py handles it
+  if IS_FACTORY and text == '/start':
+     return
   if text == '/start' and not dev_pls(m.from_user.id,m.chat.id):
      m.reply(text=f'''
 اهلين انا ،{name} 🧚
@@ -234,7 +242,7 @@ def private_func(c,m,k):
               pass
   
   if text == '/start Commands':
-    return m.reply(text=f'{k} اهلين فيك باوامر البوت\n\nللاستفسار - @GGGGG1S',
+    return m.reply(text=f'{k} اهلين فيك باوامر البوت\n\nللاستفسار - @W_WT1',
          reply_markup=InlineKeyboardMarkup (
            [
              [
@@ -262,12 +270,16 @@ def private_func(c,m,k):
 - ممنوع استخدام الثغرات
 - ممنوع وضع اسماء مُخالفة
 - ١٠ حروف مسموحه في اسمك اذا كنت بالتوب الباقي ماراح يطلع
-- في حال انك بالتوب واسمك مزخرف راح يصفيه البوت تلقائي''',reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton (f"تحديثات {name} 🍻", url=f't.me/{channel}')]]))
+- في حال انك بالتوب واسمك مزخرف راح يصفيه البوت تلقائي''',reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton (f"تحديثات {name} 🍻", url=f'https://t.me/{channel}')]]))
   
+  # If IS_FACTORY, skip normal dev /start panel - factory.py handles it
+  if IS_FACTORY and text == '/start':
+     return
   if text == '/start' and dev_pls(m.from_user.id,m.chat.id):
      reply_markup = ReplyKeyboardMarkup(
       [ 
         [('الاحصائيات')],
+        [('معلومات الاشتراك')],
         [('تغيير المطور الاساسي')],
         [("جلب نسخة القروبات"),("جلب نسخة المستخدمين")],
         [('تفعيل البوت الخدمي'),('تعطيل البوت الخدمي')],
@@ -288,7 +300,7 @@ def private_func(c,m,k):
         [('الغاء')]
       ],
       resize_keyboard=True,
-      placeholder='@GGGGG1S 🧚‍♀️'
+      placeholder='@W_WT1 🧚‍♀️'
      )
      if m.from_user.id == 6168217372 or m.from_user.id == 5117901887:
        rank = 'تاج راسي ☆'
@@ -351,7 +363,10 @@ def SudosCommandsFunc(c,m,k,r,channel):
    
    if r.get(f'{m.chat.id}:setBotChannel:{m.from_user.id}{Dev_Zaid}') and dev2_pls(m.from_user.id,m.chat.id):
       r.delete(f'{m.chat.id}:setBotChannel:{m.from_user.id}{Dev_Zaid}')
-      r.set(f'{Dev_Zaid}:BotChannel',m.text.replace('@',''))
+      ch_name = m.text.replace('@','')
+      if not re.match(r'^[a-zA-Z0-9_]+$', ch_name):
+          return m.reply(quote=True,text=f'{k} اسم القناة غير صالح! يجب أن يحتوي على أحرف إنجليزية وأرقام فقط.')
+      r.set(f'{Dev_Zaid}:BotChannel', ch_name)
       return m.reply(quote=True,text=f'{k} ابشر عيني غيرت قناة السورس لـ {m.text}')
    
    if r.get(f'{m.chat.id}:setBotKey:{m.from_user.id}{Dev_Zaid}') and dev2_pls(m.from_user.id,m.chat.id):
@@ -394,6 +409,69 @@ def SudosCommandsFunc(c,m,k,r,channel):
          chats = len(r.smembers(f'enablelist:{Dev_Zaid}'))
       return m.reply(quote=True,text=f'{k} هلا بك مطوري\n{k} المستخدمين ~ {users}\n{k} المجموعات ~ {chats}')
    
+   if text == 'معلومات الاشتراك':
+      if not dev2_pls(m.from_user.id, m.chat.id):
+         return
+      import sqlite3
+      from datetime import datetime
+      import calendar
+      
+      def calculate_rem(start_date_str, duration_months):
+          if not start_date_str or not duration_months:
+              return "غير محدد", "غير محدد"
+          try:
+              def add_m(sourcedate, months):
+                  month = sourcedate.month - 1 + months
+                  year = sourcedate.year + month // 12
+                  month = month % 12 + 1
+                  day = min(sourcedate.day, calendar.monthrange(year, month)[1])
+                  return sourcedate.replace(year=year, month=month, day=day)
+                  
+              start_date = datetime.fromisoformat(start_date_str)
+              end_date = add_m(start_date, int(duration_months))
+              now = datetime.now()
+              if now >= end_date:
+                  return "منتهي 🔴", end_date.strftime("%Y-%m-%d")
+              days_total = (end_date - now).days
+              months_left = days_total // 30
+              days_left = days_total % 30
+              parts = []
+              if months_left > 0: parts.append(f"{months_left} شهر")
+              if days_left > 0: parts.append(f"{days_left} يوم")
+              return " و ".join(parts) if parts else "أقل من يوم", end_date.strftime("%Y-%m-%d")
+          except:
+              return "خطأ في الحساب", "غير محدد"
+
+      master_db = os.path.join(os.getcwd(), '..', '..', 'factory.sqlite')
+      if not os.path.exists(master_db):
+          master_db = 'factory.sqlite'
+
+      try:
+          conn = sqlite3.connect(master_db)
+          cursor = conn.cursor()
+          cursor.execute("SELECT start_date, duration_months FROM bots WHERE id=?", (str(c.me.id),))
+          row = cursor.fetchone()
+          conn.close()
+          
+          if row and row[0] and row[1]:
+              start_date_str, duration_months = row[0], row[1]
+              remaining_time, end_date = calculate_rem(start_date_str, duration_months)
+              start_date_display = start_date_str.split('T')[0]
+              
+              text_msg = f"""
+🤖 **معلومات اشتراك البوت:**
+- تاريخ التفعيل: `{start_date_display}`
+- مدة الاشتراك: `{duration_months} شهر`
+- تاريخ الانتهاء: `{end_date}`
+- الوقت المتبقي: `{remaining_time}`
+"""
+          else:
+              text_msg = f"{k} لم يتم العثور على معلومات اشتراك صالحة لهذا البوت."
+      except Exception as e:
+          text_msg = f"{k} حدث خطأ أثناء جلب معلومات الاشتراك."
+          
+      return m.reply(quote=True, text=text_msg)
+    
    if text == 'تفعيل البوت الخدمي':
       if not dev2_pls(m.from_user.id,m.chat.id):
          return 

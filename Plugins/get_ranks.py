@@ -1,4 +1,4 @@
-'''
+﻿'''
 
 
 ██████╗░██████╗░██████╗░
@@ -10,7 +10,7 @@
 
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 
 '''
 
@@ -108,12 +108,12 @@ def get_ranks_func(c,m,k,channel):
           m.reply(text)
           
    cid = m.chat.id
-   if text == 'المنشئين الاساسيين':
+   if text in ['المنشئين الاساسيين', 'المنشئين الأساسيين', 'المنشئيين الاساسيين', 'المنشئيين الأساسيين']:
       if not dev_pls(m.from_user.id,m.chat.id):
         return m.reply(f'{k} هذا الامر يخص ( المطور وفوق ) بس')
       else:
         if not r.smembers(f'{cid}:listGOWNER:{Dev_Zaid}'):
-          return m.reply(f'{k} مافيه مالكين اساسيين ')
+          return m.reply(f'{k} مافيه منشئين اساسيين ')
         else:
           text = '- المنشئين الاساسيين:\n\n'
           count = 1
@@ -132,6 +132,35 @@ def get_ranks_func(c,m,k,channel):
              except:
                mention = f'[@{channel}](tg://user?id={int(gowner)})'
                id = int(gowner)
+               text += f'{count} ➣ {mention} ࿓ ( `{id}` )\n'
+               count += 1
+          text += '\n☆'
+          m.reply(text)
+
+   if text in ['الملاكين الاساسيين', 'الملاكين الأساسيين', 'المالكين الاساسيين', 'المالكيين الاساسيين']:
+      if not owner_pls(m.from_user.id,m.chat.id):
+        return m.reply(f'{k} هذا الامر يخص ( المالك وفوق ) بس')
+      else:
+        if not r.smembers(f'{cid}:listMOWNER:{Dev_Zaid}'):
+          return m.reply(f'{k} مافيه مالكين اساسيين ')
+        else:
+          text = '- المالكين الاساسيين:\n\n'
+          count = 1
+          for mowner in r.smembers(f'{cid}:listMOWNER:{Dev_Zaid}'):
+             if count == 101: break
+             try:
+               user = c.get_users(int(mowner))
+               mention = user.mention
+               id = user.id
+               username = user.username
+               if user.username:
+                 text += f'{count} ➣ @{username} ࿓ ( `{id}` )\n'
+               else:
+                 text += f'{count} ➣ {mention} ࿓ ( `{id}` )\n'
+               count += 1
+             except:
+               mention = f'[@{channel}](tg://user?id={int(mowner)})'
+               id = int(mowner)
                text += f'{count} ➣ {mention} ࿓ ( `{id}` )\n'
                count += 1
           text += '\n☆'

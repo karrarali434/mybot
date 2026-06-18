@@ -1,4 +1,4 @@
-'''
+﻿'''
 
 
 ██████╗░██████╗░██████╗░
@@ -10,7 +10,7 @@
 
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 
 '''
 
@@ -160,9 +160,6 @@ def yt_func(c,m,k,channel):
              audio_file = ydl.prepare_filename(info)
              ydl.process_info(info)
              
-         thumb = None
-         if info.get('thumbnail'):
-             thumb = wget.download(info['thumbnail'])
          os.rename(audio_file,audio_file.replace(".m4a",".mp3"))
          audio_file = audio_file.replace(".m4a",".mp3")
          print(f"[YT-بحث] 📤 جاري الرفع: {audio_file}")
@@ -170,7 +167,6 @@ def yt_func(c,m,k,channel):
            a = m.reply_audio(
            audio_file,
            title=info.get('title', 'Unknown'),
-           thumb=thumb,
            duration=info.get('duration', 0),
            caption=f'@{channel} ~ {duration_string} ⏳',
            performer=info.get('uploader', 'Unknown'),reply_markup=rep)
@@ -182,7 +178,6 @@ def yt_func(c,m,k,channel):
          finally:
            msg.delete()
            if os.path.exists(audio_file): os.remove(audio_file)
-           if thumb and os.path.exists(thumb): os.remove(thumb)
      except Exception as e:
          print(f"[YT-بحث] ❌ خطأ عام: {type(e).__name__}: {e}")
          import traceback; traceback.print_exc()
@@ -332,7 +327,7 @@ def yt_func(c,m,k,channel):
        id = url.split('soundcloud.com')[1]
        return m.reply(f"@{channel} - ☁️",reply_markup=InlineKeyboardMarkup ([
        [InlineKeyboardButton ("اضغط هنا لاختيار صيغة التحميل", switch_inline_query_current_chat=f'{id}#SOUND')],
-       [InlineKeyboardButton ("☁️", url=f't.me/{channel}')],
+       [InlineKeyboardButton ("☁️", url=f'https://t.me/{channel}')],
        ]))
        
        
@@ -377,7 +372,7 @@ async def shazamFunc(c,m):
 {k} اسم الصوت ( [{title}]({url}) )
 {k} اسم الفنان : {author}
 """           
-       key = InlineKeyboardMarkup ([[InlineKeyboardButton ("🧚‍♀️",url=f"t.me/{channel}")]])
+       key = InlineKeyboardMarkup ([[InlineKeyboardButton ("🧚‍♀️",url=f"https://t.me/{channel}")]])
        await m.reply_photo(
          photo,caption=TEXT,reply_markup=key)
        
@@ -419,17 +414,17 @@ async def SoundCloud(c, query):
                 InlineQueryResultArticle(
                     title="اضغط هنا للتحميل - صوت",
                     thumb_url='https://t.me/D7BotResources/161',
-                    description='~ @GGGGG1S ',
+                    description='~ @W_WT1 ',
                     url='https://t.me/eeeCASH',
-                    reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ("🧚‍♀️", url=f't.me/{channel}')]]),
+                    reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ("🧚‍♀️", url=f'https://t.me/{channel}')]]),
                     input_message_content=InputTextMessageContent(f'https://soundcloud.com{url} #AUDIO',disable_web_page_preview=True)
                 ),
                 InlineQueryResultArticle(
                     title="اضغط هنا للتحميل - بصمة",
                     thumb_url='https://t.me/D7BotResources/163',
-                    description='~ @GGGGG1S ',
+                    description='~ @W_WT1 ',
                     url='https://t.me/eeeCASH',
-                    reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ("🧚‍♀️", url=f't.me/{channel}')]]),
+                    reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ("🧚‍♀️", url=f'https://t.me/{channel}')]]),
                     input_message_content=InputTextMessageContent(f'https://soundcloud.com{url} #VOICE',disable_web_page_preview=True)
                 ),
             ],
@@ -444,17 +439,17 @@ async def SoundCloud(c, query):
                 InlineQueryResultArticle(
                     title="اضغط هنا للتحميل - صوت",
                     thumb_url='https://t.me/D7BotResources/161',
-                    description='~ @GGGGG1S ',
+                    description='~ @W_WT1 ',
                     url='https://t.me/eeeCASH',
-                    reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ("🧚‍♀️", url=f't.me/{channel}')]]),
+                    reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ("🧚‍♀️", url=f'https://t.me/{channel}')]]),
                     input_message_content=InputTextMessageContent(f'https://on.soundcloud.com{url} #AUDIO',disable_web_page_preview=True)
                 ),
                 InlineQueryResultArticle(
                     title="اضغط هنا للتحميل - بصمة",
                     thumb_url='https://t.me/D7BotResources/163',
-                    description='~ @GGGGG1S ',
+                    description='~ @W_WT1 ',
                     url='https://t.me/eeeCASH',
-                    reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ("🧚‍♀️", url=f't.me/{channel}')]]),
+                    reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton ("🧚‍♀️", url=f'https://t.me/{channel}')]]),
                     input_message_content=InputTextMessageContent(f'https://on.soundcloud.com{url} #VOICE',disable_web_page_preview=True)
                 ),
             ],
@@ -482,27 +477,52 @@ def getInfo(c, query):
     if r.get(f':disableYT:{Dev_Zaid}'): return query.answer('عذراً التحميل من اليوتيوب مغلق', show_alert=True)
     query.message.delete()
     channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'eeeCASH'
+    rep = InlineKeyboardMarkup (
+     [[
+       InlineKeyboardButton ('🧚‍♀️', url=f'https://t.me/{channel}')
+     ]]
+    )
     url = f'https://youtu.be/{vid_id}'
-    with yt_dlp.YoutubeDL({"quiet": True}) as ydl:
-        info = ydl.extract_info(url, download=False)
-        photo = info['thumbnail']
     
-    reply_markup = InlineKeyboardMarkup(
-      [
-        [
-          InlineKeyboardButton ("♫ ملف صوتي", callback_data=f'{user_id}AUDIO{vid_id}'),
-          InlineKeyboardButton ("❖ فيديو", callback_data=f'{user_id}VIDEO{vid_id}'),
-        ],
-        [
-          InlineKeyboardButton ('🧚‍♀️', url=f'https://t.me/{channel}')
-        ]
-      ]
-    )
-    query.message.reply_to_message.reply_photo(
-       photo,
-       caption=f'@{channel} ~ {url}',
-       reply_markup=reply_markup
-    )
+    # Check cache first
+    if ytdb.get(f'ytvideo{vid_id}'):
+       aud = ytdb.get(f'ytvideo{vid_id}')
+       duration = aud["duration"]
+       sec = time.strftime('%M:%S', time.gmtime(duration))
+       return query.message.reply_to_message.reply_audio(aud["audio"], caption=f'@{channel} ~ ⏳ {sec}', reply_markup=rep)
+    
+    # Download audio directly
+    msg = query.message.reply_to_message.reply(f'جاري التحميل ..')
+    ydl_ops = {"format": "bestaudio[ext=m4a]", 'forceduration': True}
+    try:
+        with yt_dlp.YoutubeDL(ydl_ops) as ydl:
+            info = ydl.extract_info(url, download=False)
+            if int(info['duration']) > 1500:
+                msg.delete()
+                return query.message.reply_to_message.reply("صوت اكثر من 25 دقيقة مقدر انزله", reply_markup=rep)
+            audio_file = ydl.prepare_filename(info)
+            ydl.process_info(info)
+        
+        duration = int(info['duration'])
+        sec = time.strftime('%M:%S', time.gmtime(duration))
+        os.rename(audio_file, audio_file.replace(".m4a", ".mp3"))
+        audio_file = audio_file.replace(".m4a", ".mp3")
+        
+        a = query.message.reply_to_message.reply_audio(
+            audio_file,
+            title=info['title'],
+            duration=int(info['duration']),
+            performer=info.get('channel', 'Unknown'),
+            caption=f'@{channel} ~ ⏳ {sec}',
+            reply_markup=rep
+        )
+        ytdb.set(f'ytvideo{vid_id}', {"type": "audio", "audio": a.audio.file_id, "duration": a.audio.duration})
+    except Exception as e:
+        query.message.reply_to_message.reply(f"حدث خطأ أثناء التحميل")
+    finally:
+        msg.delete()
+        if 'audio_file' in locals() and os.path.exists(audio_file):
+            os.remove(audio_file)
     
 
 @Client.on_callback_query(filters.regex("AUDIO"))

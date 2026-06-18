@@ -4,7 +4,7 @@ import redis
 from kvsqlite.sync import Client as DB
 import requests
 
-load_dotenv()
+load_dotenv(override=True)
 
 import time
 import threading
@@ -82,6 +82,7 @@ _real_r = redis.from_url(redis_url, decode_responses=True)
 r = CachedRedis(_real_r, ttl=5)
 
 token = os.getenv("BOT_TOKEN", "")
+IS_FACTORY = os.getenv("IS_FACTORY", "False") == "True"
 if not token:
     token = input("[+] Enter the bot token: ")
     with open(".env", "a") as f:

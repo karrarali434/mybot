@@ -1,8 +1,8 @@
-'''
+﻿'''
 
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 - التوحيد (Tawheed)
 
 '''
@@ -68,5 +68,5 @@ def tawheedFunc(c, m):
             return m.reply(f"{k} ما تم إضافة نص توحيد للقروب بعد 🚫\n{k} يقدر الأدمن يضيف بكتابة: `اضافة توحيد`")
         return m.reply(
             f"☪️ **التوحيد** ☪️\n\n"
-            f"{tawheed_text}"
+            f"`{tawheed_text}`"
         )

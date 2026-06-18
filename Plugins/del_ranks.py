@@ -1,4 +1,4 @@
-'''
+﻿'''
 
 
 ██████╗░██████╗░██████╗░
@@ -10,7 +10,7 @@
 
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 
 '''
 
@@ -84,19 +84,33 @@ def del_ranks_func(c,m,k):
              count += 1
           m.reply(demoted.format(k,get_rank(id,cid),k,count,'قائمة MY'))
    
-   if text == 'مسح المالكين الاساسيين':
+   if text == 'مسح المنشئين الاساسيين':
       if not dev_pls(id, cid):
         return m.reply(f'{k} هذا الامر يخص ( Myth🎖️ مالك القروب وفوق) بس')
       else:
         if not r.smembers(f'{cid}:listGOWNER:{Dev_Zaid}'):
-          return m.reply(f'{k} مافيه مالكين اساسيين')
+          return m.reply(f'{k} مافيه منشئين اساسيين')
         else:
           count = 0
           for gowner in r.smembers(f'{cid}:listGOWNER:{Dev_Zaid}'):
              r.srem(f'{cid}:listGOWNER:{Dev_Zaid}', int(gowner))
              r.delete(f'{cid}:rankGOWNER:{int(gowner)}{Dev_Zaid}')
              count += 1
-          m.reply(demoted.format(k,get_rank(id,cid),k,count,'المالكين الاساسيين'))
+          m.reply(demoted.format(k,get_rank(id,cid),k,count,'المنشئين الاساسيين'))
+
+   if text in ['مسح الملاكين الاساسيين', 'مسح الملاكين الأساسيين']:
+      if not owner_pls(id, cid):
+        return m.reply(f'{k} هذا الامر يخص ( المالك وفوق ) بس')
+      else:
+        if not r.smembers(f'{cid}:listMOWNER:{Dev_Zaid}'):
+          return m.reply(f'{k} مافيه ملاكين اساسيين')
+        else:
+          count = 0
+          for mowner in r.smembers(f'{cid}:listMOWNER:{Dev_Zaid}'):
+             r.srem(f'{cid}:listMOWNER:{Dev_Zaid}', int(mowner))
+             r.delete(f'{cid}:rankMOWNER:{int(mowner)}{Dev_Zaid}')
+             count += 1
+          m.reply(demoted.format(k,get_rank(id,cid),k,count,'الملاكين الاساسيين'))
    
    if text == 'مسح المالكين':
       if not gowner_pls(id, cid):
@@ -149,6 +163,7 @@ def del_ranks_func(c,m,k):
       ranks_to_check = [
            (f'{cid}:listGOWNER:{Dev_Zaid}', f'{cid}:rankGOWNER:'),
            (f'{cid}:listCREATOR:{Dev_Zaid}', f'{cid}:rankCREATOR:'),
+           (f'{cid}:listMOWNER:{Dev_Zaid}', f'{cid}:rankMOWNER:'),
            (f'{cid}:listOWNER:{Dev_Zaid}', f'{cid}:rankOWNER:'),
            (f'{cid}:listMOD:{Dev_Zaid}', f'{cid}:rankMOD:'),
            (f'{cid}:listADMIN:{Dev_Zaid}', f'{cid}:rankADMIN:')

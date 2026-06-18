@@ -1,4 +1,4 @@
-'''
+﻿'''
 
 
 ██████╗░██████╗░██████╗░
@@ -10,7 +10,7 @@
 
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 
 '''
 
@@ -422,7 +422,7 @@ def get_rngp(c,m):
           reply_markup=InlineKeyboardMarkup (
             [
             [
-              InlineKeyboardButton (title,url='t.me/eeeCASH')
+              InlineKeyboardButton (title,url='https://t.me/eeeCASH')
             ],
             [
               InlineKeyboardButton ('بصوت سعد الغامدي',callback_data=f'{m.from_user.id}quSaad={MaherAlmaikulai[f"سورة {soura}"].split("MaherSounds/")[1]}')
@@ -446,7 +446,7 @@ def get_rngp(c,m):
          [InlineKeyboardButton ('🇸🇾',callback_data=f'{m.from_user.id}memes_sy'),InlineKeyboardButton ('🇪🇬',callback_data=f'{m.from_user.id}memes_eg')],
          [InlineKeyboardButton ('🇸🇦',callback_data=f'{m.from_user.id}memes_sa'),InlineKeyboardButton ('🇦🇪',callback_data=f'{m.from_user.id}memes_ae')],
          [InlineKeyboardButton ('🇺🇸',callback_data=f'{m.from_user.id}memes_us'),InlineKeyboardButton ('🇮🇶',callback_data=f'{m.from_user.id}memes_iq'),],
-         [InlineKeyboardButton ('🧚‍♀️',url='t.me/eeeCASH')],
+         [InlineKeyboardButton ('🧚‍♀️',url='https://t.me/eeeCASH')],
        ]
      )
      )
@@ -457,7 +457,7 @@ def get_rngp(c,m):
         title = random.choice(["﴿ سَبِّحِ اسمَ رَبِّكَ الأَعلَى ﴾","﴿ وَلَلآخِرَةُ خَيرٌ لَكَ مِنَ الأولى ﴾","﴿ وَكانَ ذلِكَ عَلَى اللَّهِ يَسيرًا ﴾","﴿ لِمَن شاءَ مِنكُم أَن يَتَقَدَّمَ أَو يَتَأَخَّرَ ﴾","﴿ فَمَن عَفا وَأَصلَحَ فَأَجرُهُ عَلَى اللَّهِ ﴾","﴿ هُوَ أَهلُ التَّقوى وَأَهلُ المَغفِرَةِ ﴾","﴿ هَل جَزاءُ الإِحسانِ إِلَّا الإِحسانُ ﴾","﴿ وَلا يَظلِمُ رَبُّكَ أَحَدًا ﴾","﴿ وَمَن يُؤمِن بِاللَّهِ يَهدِ قَلبَهُ ﴾","﴿ وَكانَ رَبُّكَ قَديرًا ﴾","﴿ وَتَطمَئِنُّ قُلوبُهُم بِذِكرِ اللَّهِ ﴾","﴿ سَيَهديهِم وَيُصلِحُ بالَهُم ﴾","﴿ وَوَجَدَكَ ضالًّا فَهَدى ﴾","﴿ فَاسعَوا إِلى ذِكرِ اللَّهِ ﴾","( إِنّ السّاعَةَ آتِيَةٌ أَكَادُ أُخْفِيهَا )","﴿وَلا تَكونوا كَالَّذينَ نَسُوا اللَّهَ فَأَنساهُم أَنفُسَهُم﴾."," ‏﴿أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ﴾ ","﴿ وَقُلْ رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا ﴾♡.","‏{وَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَّكُمْ}","{ لاتحزَن إِنَّ الله مَعَنا }"])
         return m.reply_photo(f'https://raw.githubusercontent.com/maknon/Quran/main/pages-douri/{page}.png',reply_markup=InlineKeyboardMarkup (
           [[
-            InlineKeyboardButton (title,url='t.me/eeeCASH')
+            InlineKeyboardButton (title,url='https://t.me/eeeCASH')
           ]]
         ))
        
@@ -500,7 +500,7 @@ def quSaad(c,m):
         reply_markup=InlineKeyboardMarkup (
             [
             [
-              InlineKeyboardButton (title,url='t.me/eeeCASH')
+              InlineKeyboardButton (title,url='https://t.me/eeeCASH')
             ],
             [
               InlineKeyboardButton ('بصوت ماهر المعيقلي',callback_data=f'{m.from_user.id}quMaher={soura}')
@@ -530,7 +530,7 @@ def quMaher(c,m):
         reply_markup=InlineKeyboardMarkup (
             [
             [
-              InlineKeyboardButton (title,url='t.me/GGGGG1S')
+              InlineKeyboardButton (title,url='https://t.me/W_WT1')
             ],
             [
               InlineKeyboardButton ('بصوت سعد الغامدي',callback_data=f'{m.from_user.id}quSaad={soura}')
@@ -559,7 +559,7 @@ def qu3fasy(c,m):
         reply_markup=InlineKeyboardMarkup (
             [
             [
-              InlineKeyboardButton (title,url='t.me/GGGGG1S')
+              InlineKeyboardButton (title,url='https://t.me/W_WT1')
             ],
             [
               InlineKeyboardButton ('بصوت سعد الغامدي',callback_data=f'{m.from_user.id}quSaad={soura}')
@@ -588,7 +588,7 @@ def quBaset(c,m):
         reply_markup=InlineKeyboardMarkup (
             [
             [
-              InlineKeyboardButton (title,url='t.me/GGGGG1S')
+              InlineKeyboardButton (title,url='https://t.me/W_WT1')
             ],
             [
               InlineKeyboardButton ('بصوت سعد الغامدي',callback_data=f'{m.from_user.id}quSaad={soura}')

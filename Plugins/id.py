@@ -245,6 +245,8 @@ def get_my_rank(c,m,k):
 
 
    if text == 'المجموعه' or text == 'المجموعة':
+      if not owner_pls(m.from_user.id, m.chat.id):
+         return m.reply(f'{k} هذا الامر يخص ( المالك وفوق ) بس')
       get = c.invoke(GetFullChannel(channel=c.resolve_peer(m.chat.id)))
       if get.full_chat.exported_invite:
         link = get.full_chat.exported_invite.link
@@ -571,167 +573,95 @@ def get_my_rank(c,m,k):
         return c.send_message(m.chat.id, response_text, disable_web_page_preview=True, reply_to_message_id=m.id)
 
 
-   if text == 'كشف' and m.reply_to_message and m.reply_to_message.from_user:
-       try:
-           get = m.chat.get_member(m.reply_to_message.from_user.id)
-           rank = get_rank(m.reply_to_message.from_user.id, m.chat.id)
-           name = m.reply_to_message.from_user.first_name
-           msgs = int(r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{m.reply_to_message.from_user.id}'))
-           id = m.reply_to_message.from_user.id
-           if m.reply_to_message.from_user.username:
-               username = f'@{m.reply_to_message.from_user.username}'
-           elif getattr(m.reply_to_message.from_user, "usernames", None):
-               username = ''
-               for i in m.reply_to_message.from_user.usernames: username += f"@{i.username} "
-           else:
-               username = 'مافي يوزر'
-           status = m.chat.get_member(m.reply_to_message.from_user.id).status
-           if status == ChatMemberStatus.OWNER:
-               rank2 = 'المالك'
-           if status == ChatMemberStatus.ADMINISTRATOR:
-               rank2 = 'مشرف'
-           if status == ChatMemberStatus.RESTRICTED:
-               rank2 = 'مقيد'
-           if status == ChatMemberStatus.LEFT:
-               rank2 = 'طالع'
-           if status == ChatMemberStatus.MEMBER:
-               rank2 = 'عضو'
-           if status == ChatMemberStatus.BANNED:
-               rank2 = 'لاقم حظر'
-           text = f'''
+   if text.startswith('كشف'):
+       target_user = None
+       ks = None
+       if text == 'كشف' and m.reply_to_message and getattr(m.reply_to_message, 'from_user', None):
+           target_user = m.reply_to_message.from_user.id
+           ks = 'بالرد'
+       elif len(text.split()) > 1 and m.text and m.text.html and 'tg://user?id=' in m.text.html:
+           try:
+               target_user = int(re.search(r'href="([^"]+)', m.text.html).group(1).split('=')[1])
+               ks = 'بالمنشن'
+           except: pass
+       elif len(text.split()) == 2:
+           try:
+               target_user = int(text.split()[1])
+               ks = 'بالايدي'
+           except:
+               target_user = text.split()[1].replace('@', '')
+               ks = 'باليوزر'
+
+       if target_user:
+           try:
+               try:
+                   get = m.chat.get_member(target_user)
+                   user_obj = get.user
+                   status = get.status
+               except:
+                   user_obj = c.get_users(target_user)
+                   status = ChatMemberStatus.LEFT
+               
+               name = user_obj.first_name
+               id = user_obj.id
+               
+               msgs_str = r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{id}')
+               msgs = int(msgs_str) if msgs_str else 0
+
+               if user_obj.username:
+                   username = f'@{user_obj.username}'
+               elif getattr(user_obj, "usernames", None):
+                   username = ""
+                   for i in user_obj.usernames: username += f"@{i.username} "
+               else:
+                   username = 'مافي يوزر'
+               
+               if status == ChatMemberStatus.OWNER:
+                   rank2 = 'المالك'
+               elif status == ChatMemberStatus.ADMINISTRATOR:
+                   rank2 = 'مشرف'
+               elif status == ChatMemberStatus.RESTRICTED:
+                   rank2 = 'مقيد'
+               elif status == ChatMemberStatus.LEFT:
+                   rank2 = 'طالع'
+               elif status == ChatMemberStatus.MEMBER:
+                   rank2 = 'عضو'
+               elif status == ChatMemberStatus.BANNED:
+                   rank2 = 'لاقم حظر'
+               else:
+                   rank2 = 'غير معروف'
+               
+               rank = get_rank(id, m.chat.id)
+               create_date = get_creation_date(id)
+               
+               text_reply = f'''
 {k} الاسم ↢ {name}
 {k} الايدي ↢ {id}
-{k} اليوزر : ( {username} ) 
+{k} اليوزر : ↢ ( {username} ) 
 {k} الرتبه ↢ ( {rank} )
 {k} الرسائل ↢ ( {msgs} )
+{k} تاريخ الانضمام ↢ ( {create_date} )
 {k} بالمجموعة ↢ ( {rank2} )
-{k} نوع الكشف ↢ بالرد
+{k} نوع الكشف ↢ {ks}
 -
 '''
-           return m.reply(text, disable_web_page_preview=True)
-       except:
-           return m.reply(f'{k} العضو مو بالمجموعة')
-
-   if text.startswith('كشف') and len(text.split()) > 1 and 'tg://user?id=' in m.text.html:
-       print(m.text.html)
-       user = user = int(re.search(r'href="([^"]+)', m.text.html).group(1).split('=')[1])
-       ks = 'بالمنشن'
-       try:
-           get = m.chat.get_member(user)
-           name = get.user.first_name
-           id = get.user.id
-           msgs = int(r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{get.user.id}'))
-           if get.user.username:
-               username = f'@{get.user.username}'
-           elif getattr(get.user, "usernames", None):
-               username = ""
-               for i in get.user.usernames: username += f"@{i.username} "
-           else:
-               username = 'ماعنده يوزر'
-           status = get.status
-           if status == ChatMemberStatus.OWNER:
-               rank = 'المالك'
-           if status == ChatMemberStatus.ADMINISTRATOR:
-               rank = 'مشرف'
-           if status == ChatMemberStatus.RESTRICTED:
-               rank = 'مقيد'
-           if status == ChatMemberStatus.LEFT:
-               rank = 'طالع'
-           if status == ChatMemberStatus.MEMBER:
-               rank = 'عضو'
-           if status == ChatMemberStatus.BANNED:
-               rank = 'لاقم حظر'
-       except:
-           rank = 'طالع'
-           try:
-               get = c.get_users(user.lstrip('@'))
-               name = get.first_name
-               id = get.id
-               msgs = int(r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{get.id}'))
-               if get.user.username:
-                   username = f'@{get.user.username}'
-               elif getattr(get.user, "usernames", None):
-                   username = ""
-                   for i in get.user.usernames: username += f"@{i.username} "
+               if not r.get(f'{m.chat.id}:disableIDPHOTO:{Dev_Zaid}') and user_obj.photo:
+                   try:
+                       for p in c.get_chat_photos(id, limit=1):
+                           photo = p.file_id
+                       return m.reply_photo(photo, caption=text_reply)
+                   except:
+                       return m.reply(text_reply, disable_web_page_preview=True)
                else:
-                   username = 'ماعنده يوزر'
+                   return m.reply(text_reply, disable_web_page_preview=True)
            except Exception as e:
                print(e)
-               return
-       rank2 = get_rank(id, m.chat.id)
-       text = f'''
-{k} الاسم ↢ {name}
-{k} الايدي ↢{id}
-{k} اليوزر : ↢ ( {username} )
-{k} الرتبه ↢ ({rank2} )
-{k} الرسائل ↢ ( {msgs} )
-{k} بالمجموعة ↢ ( {rank} )
-{k} نوع الكشف ↢ {ks}
--
-        '''
-       return m.reply(text, disable_web_page_preview=True)
-
-   if text.startswith('كشف') and len(text.split()) == 2:
-       try:
-           user = int(text.split()[1])
-           ks = 'بالايدي'
-       except:
-           user = text.split()[1].replace('@', '')
-           ks = 'باليوزر'
-       try:
-           get = m.chat.get_member(user)
-           name = get.user.first_name
-           id = get.user.id
-           msgs = int(r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{get.user.id}'))
-           if get.user.username:
-               username = f'@{get.user.username}'
-           elif getattr(get.user, "usernames", None):
-               username = ""
-               for i in get.user.usernames: username += f"@{i.username} "
-           else:
-               username = 'ماعنده يوزر'
-           status = get.status
-           if status == ChatMemberStatus.OWNER:
-               rank = 'المالك'
-           if status == ChatMemberStatus.ADMINISTRATOR:
-               rank = 'مشرف'
-           if status == ChatMemberStatus.RESTRICTED:
-               rank = 'مقيد'
-           if status == ChatMemberStatus.LEFT:
-               rank = 'طالع'
-           if status == ChatMemberStatus.MEMBER:
-               rank = 'عضو'
-           if status == ChatMemberStatus.BANNED:
-               rank = 'لاقم حظر'
-       except:
-           rank = 'طالع'
-           try:
-               get = c.get_users(user.lstrip('@'))
-               name = get.first_name
-               id = get.id
-               msgs = int(r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{get.id}'))
-               if get.user.username:
-                   username = f'@{get.user.username}'
-               elif getattr(get.user, "usernames", None):
-                   username = ""
-                   for i in get.user.usernames: username += f"@{i.username} "
-               else:
-                   username = 'ماعنده يوزر'
-           except Exception as e:
-               print(e)
-               return
-       rank2 = get_rank(id, m.chat.id)
-       text = f'''
-{k} الاسم ↢ {name}
-{k} الايدي ↢{id}
-{k} اليوزر : ↢ ( {username} )
-{k} الرتبه ↢ ({rank2} )
-{k} الرسائل ↢ ( {msgs} )
-{k} بالمجموعة ↢ ( {rank} )
-{k} نوع الكشف ↢ {ks}
--
-        '''
-       return m.reply(text, disable_web_page_preview=True)
+               return m.reply(f'{k} العضو مو بالمجموعة او معلوماته غير متاحة')
+       elif text == 'كشف':
+           # Tell the user how to use it correctly
+           m.reply(f'{k} يرجى الرد على رسالة الشخص أو كتابة: كشف + الايدي/اليوزر')
+           m.stop_propagation()
+           return
 
 
    if text == 'صلاحياته' and m.reply_to_message and m.reply_to_message.from_user:

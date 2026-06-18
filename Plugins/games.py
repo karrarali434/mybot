@@ -1,8 +1,8 @@
-'''
+﻿'''
 
 
 [ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/GGGGG1S"}
+{"Developer":"https://t.me/W_WT1"}
 
 '''
 import random,re, time, akinator, string
@@ -196,7 +196,7 @@ def gamesFunc(c,m,k,channel):
            f' ⟨ {m.from_user.mention} ⟩\n{k} سوى حساب بالبنك\n{k} رقم حسابه ( `{id}` )')
    
    if text == 'توب' or text == 'التوب':
-     m.reply(f'{k} اهلين فيك في قوائم التوب\nللاستفسار - @GGGGG1S',
+     m.reply(f'{k} اهلين فيك في قوائم التوب\nللاستفسار - @W_WT1',
      reply_markup=InlineKeyboardMarkup (
        [
        [
@@ -204,7 +204,7 @@ def gamesFunc(c,m,k,channel):
          InlineKeyboardButton ('توب الحرامية 💰', callback_data=f'topzrf:{m.from_user.id}'),
        ],
        [
-        InlineKeyboardButton ('🧚‍♀️',url=f't.me/{channel}')
+        InlineKeyboardButton ('🧚‍♀️',url=f'https://t.me/{channel}')
        ]
        ]
      ))
@@ -214,7 +214,7 @@ def gamesFunc(c,m,k,channel):
        return m.reply(f'{k} مافيه حسابات بالبنك')
      else:
        rep = InlineKeyboardMarkup (
-         [[InlineKeyboardButton ('🧚‍♀️', url=f't.me/{channel}')]]
+         [[InlineKeyboardButton ('🧚‍♀️', url=f'https://t.me/{channel}')]]
        )
        if r.get('BankTop'):
           text = r.get('BankTop')
@@ -279,7 +279,7 @@ def gamesFunc(c,m,k,channel):
        return m.reply(f'{k} مافيه حسابات بالبنك')
      else:
        rep = InlineKeyboardMarkup (
-         [[InlineKeyboardButton ('🧚‍♀️', url=f't.me/{channel}')]]
+         [[InlineKeyboardButton ('🧚‍♀️', url=f'https://t.me/{channel}')]]
        )
        if r.get('BankTopZRF'):
           text = r.get('BankTopZRF')
@@ -651,7 +651,7 @@ def gamesFunc(c,m,k,channel):
                InlineKeyboardButton (emoji3, callback_data='None'),
              ],
              [
-               InlineKeyboardButton ('🫦', url=f't.me/{channel}')
+               InlineKeyboardButton ('🫦', url=f'https://t.me/{channel}')
              ]
            ]
          )
@@ -1641,7 +1641,7 @@ def gamesFunc(c,m,k,channel):
      dice = c.send_dice(m.chat.id,"🎲",reply_to_message_id=m.id,
      reply_markup=InlineKeyboardMarkup (
        [[
-         InlineKeyboardButton ("🧚‍♀️",url=f"t.me/{channel}")
+         InlineKeyboardButton ("🧚‍♀️",url=f"https://t.me/{channel}")
        ]]
      ))
      if dice.dice.value == 6:
@@ -1684,7 +1684,7 @@ def akinatorHandler(c,m):
    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'eeeCASH'
    if m.data == f'start_aki:{m.from_user.id}':
     rep = InlineKeyboardMarkup (
-         [[InlineKeyboardButton ('🧚‍♀️', url=f't.me/{channel}')]]
+         [[InlineKeyboardButton ('🧚‍♀️', url=f'https://t.me/{channel}')]]
        )
     m.edit_message_text("⇜ جاري بدء اللعبة...",reply_markup=rep)
     aki= akinator.Akinator()
@@ -1710,7 +1710,7 @@ def akinatorHandler(c,m):
         print(str_to_send)
         m.message.delete()
         rep = InlineKeyboardMarkup (
-         [[InlineKeyboardButton ('🧚‍♀️', url=f't.me/{channel}')]]
+         [[InlineKeyboardButton ('🧚‍♀️', url=f'https://t.me/{channel}')]]
          )
         try: c.send_photo(m.message.chat.id,str_to_send['absolute_picture_path'],caption=f"{str_to_send['name']} - {str_to_send['description']}",reply_markup=rep)
         except: c.send_message(m.message.chat.id,f"{str_to_send['name']} - {str_to_send['description']}",reply_markup=rep)
@@ -1736,7 +1736,7 @@ def akinatorHandler(c,m):
         print(str_to_send)
         m.message.delete()
         rep = InlineKeyboardMarkup (
-         [[InlineKeyboardButton ('🧚‍♀️', url=f't.me/{channel}')]]
+         [[InlineKeyboardButton ('🧚‍♀️', url=f'https://t.me/{channel}')]]
          )
         try: c.send_photo(m.message.chat.id,str_to_send['absolute_picture_path'],caption=f"{str_to_send['name']} - {str_to_send['description']}",reply_markup=rep)
         except: c.send_message(m.message.chat.id,f"{str_to_send['name']} - {str_to_send['description']}",reply_markup=rep)
@@ -1762,7 +1762,7 @@ def akinatorHandler(c,m):
         print(str_to_send)
         m.message.delete()
         rep = InlineKeyboardMarkup (
-         [[InlineKeyboardButton ('🧚‍♀️', url=f't.me/{channel}')]]
+         [[InlineKeyboardButton ('🧚‍♀️', url=f'https://t.me/{channel}')]]
          )
         try: c.send_photo(m.message.chat.id,str_to_send['absolute_picture_path'],caption=f"{str_to_send['name']} - {str_to_send['description']}",reply_markup=rep)
         except: c.send_message(m.message.chat.id,f"{str_to_send['name']} - {str_to_send['description']}",reply_markup=rep)
