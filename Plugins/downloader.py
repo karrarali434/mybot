@@ -34,6 +34,11 @@ class ShazamDummy:
         return {"track": {}}
 shazam = ShazamDummy()
 
+def _get_cookies():
+    """Return cookies.txt path if it exists"""
+    p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cookies.txt")
+    return p if os.path.exists(p) else None
+
 def time_to_seconds(time):
     stringt = str(time)
     return sum(
@@ -503,15 +508,14 @@ def getInfo(c, query):
         "geo_bypass": True,
         "nocheckcertificate": True,
         "extractor_args": {"youtube": {"player_client": ["web_creator", "android_vr", "ios"]}},
-        "http_headers": {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.5",
-        },
         "socket_timeout": 30,
         "retries": 3,
         "fragment_retries": 3,
     }
+    _ck = _get_cookies()
+    if _ck:
+        ydl_ops["cookiefile"] = _ck
+        print(f"[YT-GET] Using cookies from {_ck}")
     try:
         print(f"[YT-GET] ⬇️ Starting download for {url} (vid_id={vid_id})")
         with yt_dlp.YoutubeDL(ydl_ops) as ydl:
