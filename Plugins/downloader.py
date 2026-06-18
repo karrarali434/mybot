@@ -1,4 +1,4 @@
-﻿'''
+'''
 
 
 ██████╗░██████╗░██████╗░
@@ -484,6 +484,50 @@ def getInfo(c, query):
     )
     url = f'https://youtu.be/{vid_id}'
     
+    # Download audio directly
+    msg = query.message.reply_to_message.reply(f'جاري التحميل ..')
+    ydl_ops = {
+         "format": "bestaudio[ext=m4a]/bestaudio/best",
+         "forceduration": True,
+         "postprocessors": [],
+         "prefer_ffmpeg": False,
+         "quiet": True,
+     }
+    try:
+         with yt_dlp.YoutubeDL(ydl_ops) as ydl:
+             info = ydl.extract_info(url, download=False)
+             if int(info.get('duration', 0)) > 1500:
+                 msg.delete()
+                 return query.message.reply_to_message.reply("صوت اكثر من 25 دقيقة مقدر انزله", reply_markup=rep)
+             audio_file = ydl.prepare_filename(info)
+             ydl.process_info(info)
+         
+         duration = int(info.get('duration', 0))
+         sec = time.strftime('%M:%S', time.gmtime(duration))
+         
+         # Rename to mp3 regardless of original extension
+         mp3_file = os.path.splitext(audio_file)[0] + ".mp3"
+         if os.path.exists(audio_file) and audio_file != mp3_file:
+             os.rename(audio_file, mp3_file)
+         audio_file = mp3_file
+         
+         a = query.message.reply_to_message.reply_audio(
+             audio_file,
+             title=info.get('title', 'Unknown'),
+             duration=duration,
+             performer=info.get('channel', 'Unknown'),
+             caption=f'@{channel} ~ ⏳ {sec}',
+             reply_markup=rep
+         )
+         ytdb.set(f'ytvideo{vid_id}', {"type": "audio", "audio": a.audio.file_id, "duration": a.audio.duration})
+    except Exception as e:
+         print(f"[YT-GET] ❌ خطأ في التحميل: {type(e).__name__}: {e}")
+         import traceback; traceback.print_exc()
+         query.message.reply_to_message.reply(f"حدث خطأ أثناء التحميل: {type(e).__name__}")
+    finally:
+         msg.delete()
+         if 'audio_file' in locals() and os.path.exists(audio_file):
+             os.remove(audio_file) 
     # Check cache first
     if ytdb.get(f'ytvideo{vid_id}'):
        aud = ytdb.get(f'ytvideo{vid_id}')
