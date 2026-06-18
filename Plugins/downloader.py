@@ -484,7 +484,15 @@ def getInfo(c, query):
     )
     url = f'https://youtu.be/{vid_id}'
     
-    # Download audio directly
+    # Check cache first
+    if ytdb.get(f'ytvideo{vid_id}'):
+       aud = ytdb.get(f'ytvideo{vid_id}')
+       duration = aud["duration"]
+       import time
+       sec = time.strftime('%M:%S', time.gmtime(duration))
+       return query.message.reply_to_message.reply_audio(aud["audio"], caption=f'@{channel} ~ ⏳ {sec}', reply_markup=rep)
+
+    # Download audio with bypass options
     msg = query.message.reply_to_message.reply(f'جاري التحميل ..')
     ydl_ops = {
          "format": "bestaudio[ext=m4a]/bestaudio/best",
@@ -492,6 +500,12 @@ def getInfo(c, query):
          "postprocessors": [],
          "prefer_ffmpeg": False,
          "quiet": True,
+         "no_warnings": True,
+         "extractor_args": {"youtube": {"player_client": ["ios", "mweb"]}},
+         "http_headers": {
+             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+             "Accept-Language": "en-US,en;q=0.9",
+         },
      }
     try:
          with yt_dlp.YoutubeDL(ydl_ops) as ydl:
@@ -503,9 +517,10 @@ def getInfo(c, query):
              ydl.process_info(info)
          
          duration = int(info.get('duration', 0))
+         import time
          sec = time.strftime('%M:%S', time.gmtime(duration))
          
-         # Rename to mp3 regardless of original extension
+         import os
          mp3_file = os.path.splitext(audio_file)[0] + ".mp3"
          if os.path.exists(audio_file) and audio_file != mp3_file:
              os.rename(audio_file, mp3_file)
@@ -527,47 +542,8 @@ def getInfo(c, query):
     finally:
          msg.delete()
          if 'audio_file' in locals() and os.path.exists(audio_file):
-             os.remove(audio_file) 
-    # Check cache first
-    if ytdb.get(f'ytvideo{vid_id}'):
-       aud = ytdb.get(f'ytvideo{vid_id}')
-       duration = aud["duration"]
-       sec = time.strftime('%M:%S', time.gmtime(duration))
-       return query.message.reply_to_message.reply_audio(aud["audio"], caption=f'@{channel} ~ ⏳ {sec}', reply_markup=rep)
-    
-    # Download audio directly
-    msg = query.message.reply_to_message.reply(f'جاري التحميل ..')
-    ydl_ops = {"format": "bestaudio[ext=m4a]", 'forceduration': True}
-    try:
-        with yt_dlp.YoutubeDL(ydl_ops) as ydl:
-            info = ydl.extract_info(url, download=False)
-            if int(info['duration']) > 1500:
-                msg.delete()
-                return query.message.reply_to_message.reply("صوت اكثر من 25 دقيقة مقدر انزله", reply_markup=rep)
-            audio_file = ydl.prepare_filename(info)
-            ydl.process_info(info)
-        
-        duration = int(info['duration'])
-        sec = time.strftime('%M:%S', time.gmtime(duration))
-        os.rename(audio_file, audio_file.replace(".m4a", ".mp3"))
-        audio_file = audio_file.replace(".m4a", ".mp3")
-        
-        a = query.message.reply_to_message.reply_audio(
-            audio_file,
-            title=info['title'],
-            duration=int(info['duration']),
-            performer=info.get('channel', 'Unknown'),
-            caption=f'@{channel} ~ ⏳ {sec}',
-            reply_markup=rep
-        )
-        ytdb.set(f'ytvideo{vid_id}', {"type": "audio", "audio": a.audio.file_id, "duration": a.audio.duration})
-    except Exception as e:
-        query.message.reply_to_message.reply(f"حدث خطأ أثناء التحميل")
-    finally:
-        msg.delete()
-        if 'audio_file' in locals() and os.path.exists(audio_file):
-            os.remove(audio_file)
-    
+             os.remove(audio_file)
+
 
 @Client.on_callback_query(filters.regex("AUDIO"))
 async def get_audii(c, query):
