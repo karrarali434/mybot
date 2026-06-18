@@ -488,61 +488,76 @@ def getInfo(c, query):
     if ytdb.get(f'ytvideo{vid_id}'):
        aud = ytdb.get(f'ytvideo{vid_id}')
        duration = aud["duration"]
-       import time
        sec = time.strftime('%M:%S', time.gmtime(duration))
        return query.message.reply_to_message.reply_audio(aud["audio"], caption=f'@{channel} ~ ⏳ {sec}', reply_markup=rep)
 
-    # Download audio with bypass options
+    # Download audio
     msg = query.message.reply_to_message.reply(f'جاري التحميل ..')
     ydl_ops = {
-         "format": "bestaudio[ext=m4a]/bestaudio/best",
-         "forceduration": True,
-         "postprocessors": [],
-         "prefer_ffmpeg": False,
-         "quiet": True,
-         "no_warnings": True,
-         "extractor_args": {"youtube": {"player_client": ["ios", "mweb"]}},
-         "http_headers": {
-             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-             "Accept-Language": "en-US,en;q=0.9",
-         },
-     }
+        "format": "bestaudio[ext=m4a]/bestaudio/best",
+        "outtmpl": f"{vid_id}.%(ext)s",
+        "postprocessors": [],
+        "prefer_ffmpeg": False,
+        "quiet": False,
+        "no_warnings": False,
+        "geo_bypass": True,
+        "nocheckcertificate": True,
+        "extractor_args": {"youtube": {"player_client": ["web_creator", "android_vr", "ios"]}},
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+        },
+        "socket_timeout": 30,
+        "retries": 3,
+        "fragment_retries": 3,
+    }
     try:
-         with yt_dlp.YoutubeDL(ydl_ops) as ydl:
-             info = ydl.extract_info(url, download=False)
-             if int(info.get('duration', 0)) > 1500:
-                 msg.delete()
-                 return query.message.reply_to_message.reply("صوت اكثر من 25 دقيقة مقدر انزله", reply_markup=rep)
-             audio_file = ydl.prepare_filename(info)
-             ydl.process_info(info)
-         
-         duration = int(info.get('duration', 0))
-         import time
-         sec = time.strftime('%M:%S', time.gmtime(duration))
-         
-         import os
-         mp3_file = os.path.splitext(audio_file)[0] + ".mp3"
-         if os.path.exists(audio_file) and audio_file != mp3_file:
-             os.rename(audio_file, mp3_file)
-         audio_file = mp3_file
-         
-         a = query.message.reply_to_message.reply_audio(
-             audio_file,
-             title=info.get('title', 'Unknown'),
-             duration=duration,
-             performer=info.get('channel', 'Unknown'),
-             caption=f'@{channel} ~ ⏳ {sec}',
-             reply_markup=rep
-         )
-         ytdb.set(f'ytvideo{vid_id}', {"type": "audio", "audio": a.audio.file_id, "duration": a.audio.duration})
+        print(f"[YT-GET] ⬇️ Starting download for {url} (vid_id={vid_id})")
+        with yt_dlp.YoutubeDL(ydl_ops) as ydl:
+            info = ydl.extract_info(url, download=True)
+            audio_file = ydl.prepare_filename(info)
+
+        if not os.path.exists(audio_file):
+            # Try to find the file with any extension
+            for ext in ['m4a', 'webm', 'mp4', 'opus', 'ogg']:
+                candidate = f"{vid_id}.{ext}"
+                if os.path.exists(candidate):
+                    audio_file = candidate
+                    break
+
+        duration = int(info.get('duration', 0))
+        sec = time.strftime('%M:%S', time.gmtime(duration))
+
+        # Rename to mp3
+        mp3_file = os.path.splitext(audio_file)[0] + ".mp3"
+        if os.path.exists(audio_file) and audio_file != mp3_file:
+            os.rename(audio_file, mp3_file)
+        audio_file = mp3_file
+
+        print(f"[YT-GET] 📤 Uploading {audio_file} (exists={os.path.exists(audio_file)})")
+        a = query.message.reply_to_message.reply_audio(
+            audio_file,
+            title=info.get('title', 'Unknown'),
+            duration=duration,
+            performer=info.get('channel', 'Unknown'),
+            caption=f'@{channel} ~ ⏳ {sec}',
+            reply_markup=rep
+        )
+        ytdb.set(f'ytvideo{vid_id}', {"type": "audio", "audio": a.audio.file_id, "duration": a.audio.duration})
+        print(f"[YT-GET] ✅ Success!")
     except Exception as e:
-         print(f"[YT-GET] ❌ خطأ في التحميل: {type(e).__name__}: {e}")
-         import traceback; traceback.print_exc()
-         query.message.reply_to_message.reply(f"حدث خطأ أثناء التحميل: {type(e).__name__}")
+        print(f"[YT-GET] ❌ Error: {type(e).__name__}: {e}")
+        import traceback; traceback.print_exc()
+        query.message.reply_to_message.reply(f"حدث خطأ أثناء التحميل: {type(e).__name__}: {str(e)[:100]}")
     finally:
-         msg.delete()
-         if 'audio_file' in locals() and os.path.exists(audio_file):
-             os.remove(audio_file)
+        msg.delete()
+        # Clean up any leftover files
+        for ext in ['m4a', 'webm', 'mp4', 'opus', 'ogg', 'mp3', 'part']:
+            candidate = f"{vid_id}.{ext}"
+            if os.path.exists(candidate):
+                os.remove(candidate)
+
 
 
 @Client.on_callback_query(filters.regex("AUDIO"))
