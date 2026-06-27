@@ -182,51 +182,61 @@ def get_my_rank(c,m,k):
      return m.reply(m.from_user.first_name, disable_web_page_preview=True)
 
    if text == 'معلوماتي':
-      msgs_raw = r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{m.from_user.id}')
-      msgs = int(msgs_raw) if msgs_raw else 0
-      if msgs > 10000:
-        tfa3l = 'كنق التلي'
-      elif msgs > 5000:
-        tfa3l = 'اسطورة التفاعل'
-      elif msgs > 2500:
-        tfa3l = 'متفاعل'
-      elif msgs > 750:
-        tfa3l = 'تفاعل متوسط'
-      elif msgs > 500:
-        tfa3l = 'يجي منك'
-      elif msgs > 50:
-        tfa3l = 'شد حيلك'
-      else:
-        tfa3l = 'تفاعل صفر'
-      if not r.get(f'{m.chat.id}:TotalEDMsgs:{m.from_user.id}{Dev_Zaid}'):
-         edits = 0
-      else:
-         edits= int(r.get(f'{m.chat.id}:TotalEDMsgs:{m.from_user.id}{Dev_Zaid}'))
-      if not r.get(f'{m.chat.id}TotalContacts{m.from_user.id}{Dev_Zaid}'):
-         contacts = 0
-      else:
-         contacts = int(r.get(f'{m.chat.id}TotalContacts{m.from_user.id}{Dev_Zaid}'))
-      if m.from_user.username:
-         username = f'@{m.from_user.username}'
-      if m.from_user.usernames:
-         username = ''
-         for i in m.from_user.usernames: username += f"@{i.username} "
-      else:
-         username = 'مافي يوزر'
-      rank = get_rank(m.from_user.id,m.chat.id)
-      text = f'''
+      try:
+         msgs_raw = r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{m.from_user.id}')
+         msgs = int(msgs_raw) if msgs_raw else 0
+         if msgs > 10000:
+            tfa3l = 'كنق التلي'
+         elif msgs > 5000:
+            tfa3l = 'اسطورة التفاعل'
+         elif msgs > 2500:
+            tfa3l = 'متفاعل'
+         elif msgs > 750:
+            tfa3l = 'تفاعل متوسط'
+         elif msgs > 500:
+            tfa3l = 'يجي منك'
+         elif msgs > 50:
+            tfa3l = 'شد حيلك'
+         else:
+            tfa3l = 'تفاعل صفر'
+         if not r.get(f'{m.chat.id}:TotalEDMsgs:{m.from_user.id}{Dev_Zaid}'):
+            edits = 0
+         else:
+            edits= int(r.get(f'{m.chat.id}:TotalEDMsgs:{m.from_user.id}{Dev_Zaid}'))
+         if not r.get(f'{m.chat.id}TotalContacts{m.from_user.id}{Dev_Zaid}'):
+            contacts = 0
+         else:
+            contacts = int(r.get(f'{m.chat.id}TotalContacts{m.from_user.id}{Dev_Zaid}'))
+         if m.from_user.username:
+            username = f'@{m.from_user.username}'
+         elif getattr(m.from_user, 'usernames', None):
+            username = ''
+            for i in m.from_user.usernames: username += f"@{i.username} "
+         else:
+            username = 'مافي يوزر'
+         rank = get_rank(m.from_user.id,m.chat.id)
+         try:
+            get_bio = c.get_chat(m.from_user.id)
+            bio = get_bio.bio if get_bio.bio else 'مافي بايو'
+         except:
+            bio = 'مافي بايو'
+         text = f'''
 ⚘ المعلومات
 ❁ الاسم ↼ {m.from_user.mention}
 ❁ اليوزر ↼ {username}
 ❁ الايدي  ↼ {m.from_user.id}
 ❁ الرتبه ↼ {rank}
+❁ البايو ↼ {bio}
 ┄─┅═ـ═┅─┄
 ⚘ احصائيات الرسايل
 ❁ الرسايل ↼ {msgs}
 ❁ التعديل ↼ {edits}
 ❁ التفاعل ↼ {tfa3l}
 '''
-      return m.reply(text)
+         return m.reply(text)
+      except Exception as e:
+         print(f"[معلوماتي ERROR] {e}")
+         return m.reply(f'{k} حدث خطأ أثناء جلب معلوماتك')
 
    if text == 'بايو' and m.reply_to_message and m.reply_to_message.from_user:
       if r.get(f'{m.chat.id}:disableBio:{Dev_Zaid}'): return m.reply(f'{k} عذراً البايو مغلق')
