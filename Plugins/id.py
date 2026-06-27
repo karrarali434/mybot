@@ -182,19 +182,20 @@ def get_my_rank(c,m,k):
      return m.reply(m.from_user.first_name, disable_web_page_preview=True)
 
    if text == 'معلوماتي':
-      msgs = int(r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{m.from_user.id}'))
-      if msgs > 50:
-        tfa3l = 'شد حيلك'
-      if msgs > 500:
-        tfa3l = 'يجي منك'
-      if msgs > 750:
-        tfa3l = 'تفاعل متوسط'
-      if msgs > 2500:
-        tfa3l = 'متفاعل'
-      if msgs > 5000:
-        tfa3l = 'اسطورة التفاعل'
+      msgs_raw = r.get(f'{Dev_Zaid}{m.chat.id}:TotalMsgs:{m.from_user.id}')
+      msgs = int(msgs_raw) if msgs_raw else 0
       if msgs > 10000:
         tfa3l = 'كنق التلي'
+      elif msgs > 5000:
+        tfa3l = 'اسطورة التفاعل'
+      elif msgs > 2500:
+        tfa3l = 'متفاعل'
+      elif msgs > 750:
+        tfa3l = 'تفاعل متوسط'
+      elif msgs > 500:
+        tfa3l = 'يجي منك'
+      elif msgs > 50:
+        tfa3l = 'شد حيلك'
       else:
         tfa3l = 'تفاعل صفر'
       if not r.get(f'{m.chat.id}:TotalEDMsgs:{m.from_user.id}{Dev_Zaid}'):
