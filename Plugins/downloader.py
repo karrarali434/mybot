@@ -554,6 +554,26 @@ def getInfo(c, query):
     except Exception as e:
         print(f"[YT-GET] ❌ Error: {type(e).__name__}: {e}")
         import traceback; traceback.print_exc()
+        # === تسجيل مفصل للتشخيص ===
+        try:
+            print(f"[YT-GET] 📋 yt-dlp version: {yt_dlp.version.__version__}")
+        except:
+            print("[YT-GET] 📋 Could not get yt-dlp version")
+        try:
+            print(f"[YT-GET] 📋 Listing available formats for {url}:")
+            with yt_dlp.YoutubeDL({"quiet": True, "geo_bypass": True}) as ydl_debug:
+                debug_info = ydl_debug.extract_info(url, download=False)
+                formats = debug_info.get("formats", [])
+                print(f"[YT-GET] 📋 Total formats found: {len(formats)}")
+                for fmt in formats:
+                    print(f"[YT-GET]   format_id={fmt.get('format_id')} ext={fmt.get('ext')} "
+                          f"acodec={fmt.get('acodec')} vcodec={fmt.get('vcodec')} "
+                          f"abr={fmt.get('abr')} filesize={fmt.get('filesize')} "
+                          f"format_note={fmt.get('format_note')} url_type={'direct' if fmt.get('url') else 'manifest'}")
+        except Exception as e2:
+            print(f"[YT-GET] 📋 Failed to list formats: {type(e2).__name__}: {e2}")
+        print(f"[YT-GET] 📋 ydl_ops used: {ydl_ops}")
+        # === نهاية التسجيل المفصل ===
         query.message.reply_to_message.reply(f"حدث خطأ أثناء التحميل: {type(e).__name__}: {str(e)[:100]}")
     finally:
         msg.delete()
