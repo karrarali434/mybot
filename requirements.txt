@@ -1,7 +1,7 @@
 pyrogram==2.0.97
 #tgcrypto
 requests 
-yt_dlp
+yt-dlp>=2024.04.09
 youtube_search
 redis
 pytz

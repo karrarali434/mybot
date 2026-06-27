@@ -153,7 +153,7 @@ def yt_func(c,m,k,channel):
          msg = m.reply(f'{k} جاري التحميل ...')
          url = f'https://youtu.be/{id}'
          print(f"[YT-بحث] ⬇️ جاري التحميل: {url}")
-         ydl_ops = {"format": "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best",'forceduration':True, "extractor_args": {"youtube": {"player_client": ["mweb", "web"]}}}
+         ydl_ops = {"format": "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best",'forceduration':True}
          with yt_dlp.YoutubeDL(ydl_ops) as ydl:
              info = ydl.extract_info(url, download=False)
              if info.get('duration', 0) > 1500:
@@ -509,7 +509,6 @@ def getInfo(c, query):
         "no_warnings": False,
         "geo_bypass": True,
         "nocheckcertificate": True,
-        "extractor_args": {"youtube": {"player_client": ["mweb", "web"]}},
         "socket_timeout": 30,
         "retries": 5,
         "fragment_retries": 5,
@@ -593,7 +592,7 @@ def audio_down(c, query):
     url = f'https://youtu.be/{vid_id}'
     query.edit_message_caption("جاري التحميل ..", reply_markup=rep)    
     #ydl_ops = {"format": "bestaudio[ext=m4a]"}
-    ydl_ops = {"format": "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best",'forceduration':True, "extractor_args": {"youtube": {"player_client": ["mweb", "web"]}}}
+    ydl_ops = {"format": "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best",'forceduration':True}
     with yt_dlp.YoutubeDL(ydl_ops) as ydl:
         info = ydl.extract_info(url, download=False)
         if int(info['duration']) > 1500:
