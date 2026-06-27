@@ -153,7 +153,7 @@ def yt_func(c,m,k,channel):
          msg = m.reply(f'{k} جاري التحميل ...')
          url = f'https://youtu.be/{id}'
          print(f"[YT-بحث] ⬇️ جاري التحميل: {url}")
-         ydl_ops = {"format": "bestaudio[ext=m4a]",'forceduration':True}
+         ydl_ops = {"format": "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best",'forceduration':True, "extractor_args": {"youtube": {"player_client": ["mweb", "web"]}}}
          with yt_dlp.YoutubeDL(ydl_ops) as ydl:
              info = ydl.extract_info(url, download=False)
              if info.get('duration', 0) > 1500:
@@ -165,8 +165,10 @@ def yt_func(c,m,k,channel):
              audio_file = ydl.prepare_filename(info)
              ydl.process_info(info)
              
-         os.rename(audio_file,audio_file.replace(".m4a",".mp3"))
-         audio_file = audio_file.replace(".m4a",".mp3")
+         mp3_file = os.path.splitext(audio_file)[0] + ".mp3"
+         if os.path.exists(audio_file) and audio_file != mp3_file:
+             os.rename(audio_file, mp3_file)
+         audio_file = mp3_file
          print(f"[YT-بحث] 📤 جاري الرفع: {audio_file}")
          try:
            a = m.reply_audio(
@@ -499,7 +501,7 @@ def getInfo(c, query):
     # Download audio
     msg = query.message.reply_to_message.reply(f'جاري التحميل ..')
     ydl_ops = {
-        "format": "bestaudio[ext=m4a]/bestaudio/best",
+        "format": "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best",
         "outtmpl": f"{vid_id}.%(ext)s",
         "postprocessors": [],
         "prefer_ffmpeg": False,
@@ -507,10 +509,10 @@ def getInfo(c, query):
         "no_warnings": False,
         "geo_bypass": True,
         "nocheckcertificate": True,
-        "extractor_args": {"youtube": {"player_client": ["web_creator", "android_vr", "ios"]}},
+        "extractor_args": {"youtube": {"player_client": ["mweb", "web"]}},
         "socket_timeout": 30,
-        "retries": 3,
-        "fragment_retries": 3,
+        "retries": 5,
+        "fragment_retries": 5,
     }
     _ck = _get_cookies()
     if _ck:
@@ -591,7 +593,7 @@ def audio_down(c, query):
     url = f'https://youtu.be/{vid_id}'
     query.edit_message_caption("جاري التحميل ..", reply_markup=rep)    
     #ydl_ops = {"format": "bestaudio[ext=m4a]"}
-    ydl_ops = {"format": "bestaudio[ext=m4a]",'forceduration':True}
+    ydl_ops = {"format": "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best",'forceduration':True, "extractor_args": {"youtube": {"player_client": ["mweb", "web"]}}}
     with yt_dlp.YoutubeDL(ydl_ops) as ydl:
         info = ydl.extract_info(url, download=False)
         if int(info['duration']) > 1500:
@@ -601,8 +603,10 @@ def audio_down(c, query):
     query.edit_message_caption("✈️✈️✈️✈️✈️", reply_markup=rep)
     duration= int(info['duration'])
     sec = time.strftime('%M:%S', time.gmtime(duration))
-    os.rename(audio_file,audio_file.replace(".m4a",".mp3"))
-    audio_file = audio_file.replace(".m4a",".mp3")
+    mp3_file = os.path.splitext(audio_file)[0] + ".mp3"
+    if os.path.exists(audio_file) and audio_file != mp3_file:
+        os.rename(audio_file, mp3_file)
+    audio_file = mp3_file
     try:
       a = query.message.reply_audio(
         audio_file,
