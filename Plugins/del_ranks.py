@@ -1,4 +1,4 @@
-﻿'''
+'''
 
 
 ██████╗░██████╗░██████╗░
@@ -202,6 +202,30 @@ def del_ranks_func(c,m,k):
              r.delete(f'{cid}:rankPRE:{int(MOD)}{Dev_Zaid}')
              count += 1
           m.reply(demoted.format(k,get_rank(id,cid),k,count,'المميزين'))
+
+   if text == 'مسح الكل' and not m.reply_to_message:
+      if not owner_pls(id, cid):
+        return m.reply(f'{k} هذا الأمر يخص ( المالك وفوق ) بس')
+      else:
+        count = 0
+        ranks_lists = [
+            (f'{cid}:listGOWNER:{Dev_Zaid}', f'{cid}:rankGOWNER:'),
+            (f'{cid}:listCREATOR:{Dev_Zaid}', f'{cid}:rankCREATOR:'),
+            (f'{cid}:listMOWNER:{Dev_Zaid}', f'{cid}:rankMOWNER:'),
+            (f'{cid}:listOWNER:{Dev_Zaid}', f'{cid}:rankOWNER:'),
+            (f'{cid}:listMOD:{Dev_Zaid}', f'{cid}:rankMOD:'),
+            (f'{cid}:listADMIN:{Dev_Zaid}', f'{cid}:rankADMIN:'),
+            (f'{cid}:listPRE:{Dev_Zaid}', f'{cid}:rankPRE:'),
+        ]
+        for list_key, rank_prefix in ranks_lists:
+            for mem in r.smembers(list_key):
+                mem_id = int(mem)
+                r.srem(list_key, mem_id)
+                r.delete(f'{rank_prefix}{mem_id}{Dev_Zaid}')
+                count += 1
+        if count == 0:
+          return m.reply(f'{k} مافيه رتب بالقروب')
+        return m.reply(f'{k} ابشر عيني {get_rank(id,cid)}\n{k} مسحت جميع الرتب ( {count} ) من القروب\n☆')
    
    if text == 'مسح المكتومين':
       if not mod_pls(id, cid):
