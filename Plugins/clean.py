@@ -10,8 +10,9 @@ import re
 from helpers.Ranks import admin_pls
 import config
 
+import os
 chats_db = {}
-db = redis.Redis(decode_responses=True)
+db = redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379"), decode_responses=True)
 ZAID = token.split(':')[0]
 
 @Client.on_message(filters.regex(r"^مسح(\s+الميديا|\s+الكل)?(\s+\d+)?$") & filters.group, group=50)
